@@ -69,5 +69,48 @@ namespace Xpass
                     break;
             }
         }
+
+
+        static List<string> GetXshFiles(string directory)
+        {
+            List<string> xshFiles = new List<string>();
+
+            try
+            {
+                // 获取当前目录下的所有 .xsh 文件
+                string[] files = Directory.GetFiles(directory, "*.xsh");
+
+                // 将当前目录下的 .xsh 文件添加到列表中
+                xshFiles.AddRange(files);
+
+                // 获取当前目录下的所有子目录
+                string[] subdirectories = Directory.GetDirectories(directory);
+
+                // 递归遍历子目录
+                foreach (var subdirectory in subdirectories)
+                {
+                    // 递归获取子目录下的 .xsh 文件
+                    List<string> subdirectoryXshFiles = GetXshFiles(subdirectory);
+
+                    // 将子目录下的 .xsh 文件添加到列表中
+                    xshFiles.AddRange(subdirectoryXshFiles);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"发生异常: {ex.Message}");
+            }
+
+            return xshFiles;
+        }
+
+        static string Decrypt(string filePath)
+        {
+            return "";
+        }
+
     }
+
+
+
 }
