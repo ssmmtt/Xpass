@@ -29,113 +29,113 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            label1 = new Label();
-            textBox1 = new TextBox();
-            checkBox1 = new CheckBox();
-            button1 = new Button();
-            button2 = new Button();
-            button3 = new Button();
-            richTextBox1 = new RichTextBox();
-            richTextBox2 = new RichTextBox();
+            masterPasswdLabel = new Label();
+            masterPasswdTextBox = new TextBox();
+            showPasswdCheckBox = new CheckBox();
+            selectFilesButton = new Button();
+            selectDirButton = new Button();
+            decryptButton = new Button();
+            pathRichTextBox = new RichTextBox();
+            resultRichTextBox = new RichTextBox();
             notifyIcon1 = new NotifyIcon(components);
-            button4 = new Button();
+            saveButton = new Button();
             openFileDialog1 = new OpenFileDialog();
             folderBrowserDialog1 = new FolderBrowserDialog();
             SuspendLayout();
             // 
-            // label1
+            // masterPasswdLabel
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(12, 151);
-            label1.Name = "label1";
-            label1.Size = new Size(56, 17);
-            label1.TabIndex = 0;
-            label1.Text = "主密码：";
+            masterPasswdLabel.AutoSize = true;
+            masterPasswdLabel.Location = new Point(12, 151);
+            masterPasswdLabel.Name = "masterPasswdLabel";
+            masterPasswdLabel.Size = new Size(56, 17);
+            masterPasswdLabel.TabIndex = 0;
+            masterPasswdLabel.Text = "主密码：";
             // 
-            // textBox1
+            // masterPasswdTextBox
             // 
-            textBox1.Location = new Point(74, 148);
-            textBox1.Name = "textBox1";
-            textBox1.PasswordChar = '*';
-            textBox1.PlaceholderText = "没有设置就不填";
-            textBox1.Size = new Size(458, 23);
-            textBox1.TabIndex = 5;
+            masterPasswdTextBox.Location = new Point(74, 148);
+            masterPasswdTextBox.Name = "masterPasswdTextBox";
+            masterPasswdTextBox.PasswordChar = '*';
+            masterPasswdTextBox.PlaceholderText = "没有设置就不填";
+            masterPasswdTextBox.Size = new Size(458, 23);
+            masterPasswdTextBox.TabIndex = 5;
             // 
-            // checkBox1
+            // showPasswdCheckBox
             // 
-            checkBox1.AutoSize = true;
-            checkBox1.ForeColor = SystemColors.ControlDarkDark;
-            checkBox1.Location = new Point(538, 151);
-            checkBox1.Name = "checkBox1";
-            checkBox1.Size = new Size(75, 21);
-            checkBox1.TabIndex = 2;
-            checkBox1.Text = "显示密码";
-            checkBox1.UseVisualStyleBackColor = true;
+            showPasswdCheckBox.AutoSize = true;
+            showPasswdCheckBox.ForeColor = SystemColors.ControlDarkDark;
+            showPasswdCheckBox.Location = new Point(538, 151);
+            showPasswdCheckBox.Name = "showPasswdCheckBox";
+            showPasswdCheckBox.Size = new Size(75, 21);
+            showPasswdCheckBox.TabIndex = 2;
+            showPasswdCheckBox.Text = "显示密码";
+            showPasswdCheckBox.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // selectFilesButton
             // 
-            button1.Location = new Point(12, 11);
-            button1.Name = "button1";
-            button1.Size = new Size(225, 44);
-            button1.TabIndex = 3;
-            button1.Text = "选择文件";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += Button1_Click;
+            selectFilesButton.Location = new Point(12, 11);
+            selectFilesButton.Name = "selectFilesButton";
+            selectFilesButton.Size = new Size(225, 44);
+            selectFilesButton.TabIndex = 3;
+            selectFilesButton.Text = "选择文件";
+            selectFilesButton.UseVisualStyleBackColor = true;
+            selectFilesButton.Click += SelectFilesButton_Click;
             // 
-            // button2
+            // selectDirButton
             // 
-            button2.Location = new Point(253, 11);
-            button2.Name = "button2";
-            button2.Size = new Size(225, 44);
-            button2.TabIndex = 4;
-            button2.Text = "选择目录";
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += button2_Click;
+            selectDirButton.Location = new Point(253, 11);
+            selectDirButton.Name = "selectDirButton";
+            selectDirButton.Size = new Size(225, 44);
+            selectDirButton.TabIndex = 4;
+            selectDirButton.Text = "选择目录";
+            selectDirButton.UseVisualStyleBackColor = true;
+            selectDirButton.Click += SelectDirButton_Click;
             // 
-            // button3
+            // decryptButton
             // 
-            button3.BackColor = Color.DeepSkyBlue;
-            button3.Font = new Font("Microsoft YaHei UI", 24F, FontStyle.Bold, GraphicsUnit.Point, 134);
-            button3.Location = new Point(486, 12);
-            button3.Name = "button3";
-            button3.Size = new Size(127, 89);
-            button3.TabIndex = 5;
-            button3.Text = "解密";
-            button3.UseVisualStyleBackColor = false;
-            button3.Click += button3_Click;
+            decryptButton.BackColor = Color.DeepSkyBlue;
+            decryptButton.Font = new Font("Microsoft YaHei UI", 24F, FontStyle.Bold, GraphicsUnit.Point, 134);
+            decryptButton.Location = new Point(486, 12);
+            decryptButton.Name = "decryptButton";
+            decryptButton.Size = new Size(127, 89);
+            decryptButton.TabIndex = 5;
+            decryptButton.Text = "解密";
+            decryptButton.UseVisualStyleBackColor = false;
+            decryptButton.Click += DecryptButton_Click;
             // 
-            // richTextBox1
+            // pathRichTextBox
             // 
-            richTextBox1.Location = new Point(12, 61);
-            richTextBox1.Name = "richTextBox1";
-            richTextBox1.ReadOnly = true;
-            richTextBox1.Size = new Size(466, 81);
-            richTextBox1.TabIndex = 6;
-            richTextBox1.Text = "";
+            pathRichTextBox.Location = new Point(12, 61);
+            pathRichTextBox.Name = "pathRichTextBox";
+            pathRichTextBox.ReadOnly = true;
+            pathRichTextBox.Size = new Size(466, 81);
+            pathRichTextBox.TabIndex = 6;
+            pathRichTextBox.Text = "";
             // 
-            // richTextBox2
+            // resultRichTextBox
             // 
-            richTextBox2.Location = new Point(12, 177);
-            richTextBox2.Name = "richTextBox2";
-            richTextBox2.ReadOnly = true;
-            richTextBox2.Size = new Size(601, 381);
-            richTextBox2.TabIndex = 7;
-            richTextBox2.Text = "";
+            resultRichTextBox.Location = new Point(12, 177);
+            resultRichTextBox.Name = "resultRichTextBox";
+            resultRichTextBox.ReadOnly = true;
+            resultRichTextBox.Size = new Size(601, 381);
+            resultRichTextBox.TabIndex = 7;
+            resultRichTextBox.Text = "";
             // 
             // notifyIcon1
             // 
             notifyIcon1.Text = "notifyIcon1";
             notifyIcon1.Visible = true;
             // 
-            // button4
+            // saveButton
             // 
-            button4.Enabled = false;
-            button4.Location = new Point(486, 107);
-            button4.Name = "button4";
-            button4.Size = new Size(127, 35);
-            button4.TabIndex = 8;
-            button4.Text = "导出";
-            button4.UseVisualStyleBackColor = true;
+            saveButton.Enabled = false;
+            saveButton.Location = new Point(486, 107);
+            saveButton.Name = "saveButton";
+            saveButton.Size = new Size(127, 35);
+            saveButton.TabIndex = 8;
+            saveButton.Text = "保存";
+            saveButton.UseVisualStyleBackColor = true;
             // 
             // openFileDialog1
             // 
@@ -148,15 +148,15 @@
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(625, 570);
-            Controls.Add(button4);
-            Controls.Add(richTextBox2);
-            Controls.Add(richTextBox1);
-            Controls.Add(button3);
-            Controls.Add(button2);
-            Controls.Add(button1);
-            Controls.Add(checkBox1);
-            Controls.Add(textBox1);
-            Controls.Add(label1);
+            Controls.Add(saveButton);
+            Controls.Add(resultRichTextBox);
+            Controls.Add(pathRichTextBox);
+            Controls.Add(decryptButton);
+            Controls.Add(selectDirButton);
+            Controls.Add(selectFilesButton);
+            Controls.Add(showPasswdCheckBox);
+            Controls.Add(masterPasswdTextBox);
+            Controls.Add(masterPasswdLabel);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             Name = "Form1";
@@ -168,17 +168,18 @@
 
         #endregion
 
-        private Label label1;
-        private TextBox textBox1;
-        private CheckBox checkBox1;
-        private Button button1;
-        private Button button2;
-        private Button button3;
-        private RichTextBox richTextBox1;
-        private RichTextBox richTextBox2;
+        private Label masterPasswdLabel;
+        private TextBox masterPasswdTextBox;
+        private CheckBox showPasswdCheckBox;
+        private Button selectFilesButton;
+        private Button selectDirButton;
+        private Button decryptButton;
+        private RichTextBox pathRichTextBox;
+        private RichTextBox resultRichTextBox;
         private NotifyIcon notifyIcon1;
         private Button button4;
         private OpenFileDialog openFileDialog1;
         private FolderBrowserDialog folderBrowserDialog1;
+        private Button saveButton;
     }
 }
