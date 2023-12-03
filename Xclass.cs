@@ -1,60 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Security.Principal;
+
 
 namespace Xpass
 {
+    public struct Xsh
+    {
+        public string host;
+        public string userName;
+        public string password;
+        public string encryptPw;
+        public string port;
+    }
+
     class Xclass
     {
 
-        public struct Xsh
+        public static Xsh FileParser(string xshPath)
         {
-            public string host;
-            public string userName;
-            public string password;
-            public string version;
-        }
 
-    
+            Xsh xsh = new();
 
-        public static Xsh XSHParser(string xshPath)
-        {
-            Xsh xsh;
-            xsh.host = null;
-            xsh.userName = null;
-            xsh.password = null;
-            xsh.version = null;
-
-            var sid = GetSid();
             using (StreamReader sr = new StreamReader(xshPath))
             {
-                string rawPass;
+                string? rawPass;
                 while ((rawPass = sr.ReadLine()) != null)
                 {
                     if (System.Text.RegularExpressions.Regex.IsMatch(rawPass, @"Host=(.*?)"))
                     {
                         xsh.host = rawPass.Replace("Host=", "");
                     }
-                    if (System.Text.RegularExpressions.Regex.IsMatch(rawPass, @"Password=(.*?)"))
+                    else if (System.Text.RegularExpressions.Regex.IsMatch(rawPass, @"^Port=(.*?)"))
+                    {
+                        xsh.port = rawPass.Replace("Port=", "");
+
+                    }
+                    else if (System.Text.RegularExpressions.Regex.IsMatch(rawPass, @"Password=(.*?)"))
                     {
                         rawPass = rawPass.Replace("Password=", "");
                         rawPass = rawPass.Replace("\r\n", "");
-                        if (rawPass.Equals(""))
-                        {
-                            continue;
-                        }
-
+                        xsh.encryptPw = rawPass;
                     }
-                    if (System.Text.RegularExpressions.Regex.IsMatch(rawPass, @"UserName=(.*?)"))
+                    else if (System.Text.RegularExpressions.Regex.IsMatch(rawPass, @"UserName=(.*?)"))
                     {
                         xsh.userName = rawPass.Replace("UserName=", "");
-                    }
-                    if (System.Text.RegularExpressions.Regex.IsMatch(rawPass, @"Version=(.*?)"))
-                    {
-                        xsh.version = rawPass.Replace("Version=", "");
                     }
                 }
             }
@@ -63,11 +51,27 @@ namespace Xpass
 
         public static string GetSid()
         {
-            string userName = WindowsIdentity.GetCurrent().Name;
-            string sid = new SecurityIdentifier(WindowsIdentity.GetCurrent().User.Value).ToString();
+            WindowsIdentity currentIdentity = WindowsIdentity.GetCurrent();
 
-            return $"{userName}{sid}";
+            if (currentIdentity != null)
+            {
+                string userName = currentIdentity.Name;
+
+                try
+                {
+                    string sid = new SecurityIdentifier(currentIdentity.User?.Value ?? "").ToString();
+                    return $"{userName}{sid}";
+                }
+                catch (Exception ex)
+                {
+                    return $"{userName} Error retrieving SID: {ex.Message}";
+                }
+            }
+
+            return "Unable to retrieve current Windows identity.";
         }
+
+
 
         public static List<string> GetXshFiles(string directory)
         {
@@ -144,65 +148,6 @@ namespace Xpass
             }
 
             return outputBuffer;
-        }
-    }
-    class IniFile
-    {
-        private readonly Dictionary<string, Dictionary<string, string>> sections = new Dictionary<string, Dictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
-
-        public IniFile(string filePath, Encoding encoding)
-        {
-            string[] lines = File.ReadAllLines(filePath, encoding);
-
-            Dictionary<string, string> currentSection = null;
-
-            foreach (string line in lines)
-            {
-                string trimmedLine = line.Trim();
-
-                if (string.IsNullOrWhiteSpace(trimmedLine) || trimmedLine.StartsWith(";"))
-                {
-                    continue;
-                }
-
-                if (trimmedLine.StartsWith("[") && trimmedLine.EndsWith("]"))
-                {
-                    string sectionName = trimmedLine.Substring(1, trimmedLine.Length - 2);
-                    currentSection = GetOrCreateSection(sectionName);
-                }
-                else if (currentSection != null)
-                {
-                    int separatorIndex = trimmedLine.IndexOf('=');
-                    if (separatorIndex >= 0)
-                    {
-                        string key = trimmedLine.Substring(0, separatorIndex).Trim();
-                        string value = trimmedLine.Substring(separatorIndex + 1).Trim();
-                        currentSection[key] = value;
-                    }
-                }
-            }
-        }
-
-        public string this[string section, string key]
-        {
-            get
-            {
-                if (sections.TryGetValue(section, out var values) && values.TryGetValue(key, out var value))
-                {
-                    return value;
-                }
-                return null;
-            }
-        }
-
-        private Dictionary<string, string> GetOrCreateSection(string section)
-        {
-            if (!sections.TryGetValue(section, out var values))
-            {
-                values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                sections[section] = values;
-            }
-            return values;
         }
     }
 }

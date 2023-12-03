@@ -1,6 +1,3 @@
-using System.Diagnostics;
-using System.Windows.Forms;
-
 namespace Xpass
 {
     public partial class Form1 : Form
@@ -46,7 +43,6 @@ namespace Xpass
                     pathRichTextBox.AppendText(folderBrowserDialog1.SelectedPath);
                     selectedFiles = Xclass.GetXshFiles(folderBrowserDialog1.SelectedPath);
 
-
                 }
             }
         }
@@ -60,10 +56,17 @@ namespace Xpass
                 foreach (string element in selectedFiles)
                 {
                     resultRichTextBox.AppendText(index + "£º" + element + Environment.NewLine);
+                    var a = Xclass.FileParser(element);
+                    resultRichTextBox.AppendText("    Host£º" + a.host + Environment.NewLine);
+                    resultRichTextBox.AppendText("    Port£º" + a.port + Environment.NewLine);
+                    resultRichTextBox.AppendText("    UserName£º" + a.userName + Environment.NewLine);
+                    resultRichTextBox.AppendText("    Password£º" + a.encryptPw + Environment.NewLine);
+
+
                     resultRichTextBox.ScrollToCaret();
                     index++;
                 }
-
+                masterPasswdTextBox.Text = Xclass.GetSid();
             }
             else
             {
@@ -73,11 +76,18 @@ namespace Xpass
 
         }
 
+        private void showPasswdCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (showPasswdCheckBox.Checked)
+            {
+                masterPasswdTextBox.PasswordChar = '\0';
+            }
+            else
+            {
+                masterPasswdTextBox.PasswordChar = '*';
 
-
-
-
-
+            }
+        }
     }
 
 

@@ -46,41 +46,38 @@
             // masterPasswdLabel
             // 
             masterPasswdLabel.AutoSize = true;
-            masterPasswdLabel.Location = new Point(19, 213);
-            masterPasswdLabel.Margin = new Padding(5, 0, 5, 0);
+            masterPasswdLabel.Location = new Point(12, 151);
             masterPasswdLabel.Name = "masterPasswdLabel";
-            masterPasswdLabel.Size = new Size(82, 24);
+            masterPasswdLabel.Size = new Size(56, 17);
             masterPasswdLabel.TabIndex = 0;
             masterPasswdLabel.Text = "主密码：";
             // 
             // masterPasswdTextBox
             // 
-            masterPasswdTextBox.Location = new Point(113, 210);
-            masterPasswdTextBox.Margin = new Padding(5, 4, 5, 4);
+            masterPasswdTextBox.Location = new Point(72, 149);
             masterPasswdTextBox.Name = "masterPasswdTextBox";
             masterPasswdTextBox.PasswordChar = '*';
             masterPasswdTextBox.PlaceholderText = "没有设置就不填";
-            masterPasswdTextBox.Size = new Size(717, 30);
+            masterPasswdTextBox.Size = new Size(458, 23);
             masterPasswdTextBox.TabIndex = 5;
             // 
             // showPasswdCheckBox
             // 
             showPasswdCheckBox.AutoSize = true;
             showPasswdCheckBox.ForeColor = SystemColors.ControlDarkDark;
-            showPasswdCheckBox.Location = new Point(842, 211);
-            showPasswdCheckBox.Margin = new Padding(5, 4, 5, 4);
+            showPasswdCheckBox.Location = new Point(536, 149);
             showPasswdCheckBox.Name = "showPasswdCheckBox";
-            showPasswdCheckBox.Size = new Size(108, 28);
+            showPasswdCheckBox.Size = new Size(75, 21);
             showPasswdCheckBox.TabIndex = 2;
             showPasswdCheckBox.Text = "显示密码";
             showPasswdCheckBox.UseVisualStyleBackColor = true;
+            showPasswdCheckBox.CheckedChanged += showPasswdCheckBox_CheckedChanged;
             // 
             // selectFilesButton
             // 
-            selectFilesButton.Location = new Point(19, 16);
-            selectFilesButton.Margin = new Padding(5, 4, 5, 4);
+            selectFilesButton.Location = new Point(12, 11);
             selectFilesButton.Name = "selectFilesButton";
-            selectFilesButton.Size = new Size(354, 62);
+            selectFilesButton.Size = new Size(225, 44);
             selectFilesButton.TabIndex = 3;
             selectFilesButton.Text = "选择文件";
             selectFilesButton.UseVisualStyleBackColor = true;
@@ -88,10 +85,9 @@
             // 
             // selectDirButton
             // 
-            selectDirButton.Location = new Point(398, 16);
-            selectDirButton.Margin = new Padding(5, 4, 5, 4);
+            selectDirButton.Location = new Point(253, 11);
             selectDirButton.Name = "selectDirButton";
-            selectDirButton.Size = new Size(354, 62);
+            selectDirButton.Size = new Size(225, 44);
             selectDirButton.TabIndex = 4;
             selectDirButton.Text = "选择目录";
             selectDirButton.UseVisualStyleBackColor = true;
@@ -101,10 +97,9 @@
             // 
             decryptButton.BackColor = Color.DeepSkyBlue;
             decryptButton.Font = new Font("Microsoft YaHei UI", 24F, FontStyle.Bold, GraphicsUnit.Point, 134);
-            decryptButton.Location = new Point(764, 17);
-            decryptButton.Margin = new Padding(5, 4, 5, 4);
+            decryptButton.Location = new Point(486, 12);
             decryptButton.Name = "decryptButton";
-            decryptButton.Size = new Size(200, 126);
+            decryptButton.Size = new Size(127, 89);
             decryptButton.TabIndex = 5;
             decryptButton.Text = "解密";
             decryptButton.UseVisualStyleBackColor = false;
@@ -112,21 +107,19 @@
             // 
             // pathRichTextBox
             // 
-            pathRichTextBox.Location = new Point(19, 86);
-            pathRichTextBox.Margin = new Padding(5, 4, 5, 4);
+            pathRichTextBox.Location = new Point(12, 61);
             pathRichTextBox.Name = "pathRichTextBox";
             pathRichTextBox.ReadOnly = true;
-            pathRichTextBox.Size = new Size(730, 113);
+            pathRichTextBox.Size = new Size(466, 81);
             pathRichTextBox.TabIndex = 6;
             pathRichTextBox.Text = "";
             // 
             // resultRichTextBox
             // 
-            resultRichTextBox.Location = new Point(19, 250);
-            resultRichTextBox.Margin = new Padding(5, 4, 5, 4);
+            resultRichTextBox.Location = new Point(12, 177);
             resultRichTextBox.Name = "resultRichTextBox";
             resultRichTextBox.ReadOnly = true;
-            resultRichTextBox.Size = new Size(942, 536);
+            resultRichTextBox.Size = new Size(601, 381);
             resultRichTextBox.TabIndex = 7;
             resultRichTextBox.Text = "";
             // 
@@ -138,10 +131,9 @@
             // saveButton
             // 
             saveButton.Enabled = false;
-            saveButton.Location = new Point(764, 151);
-            saveButton.Margin = new Padding(5, 4, 5, 4);
+            saveButton.Location = new Point(486, 107);
             saveButton.Name = "saveButton";
-            saveButton.Size = new Size(200, 49);
+            saveButton.Size = new Size(127, 35);
             saveButton.TabIndex = 8;
             saveButton.Text = "保存";
             saveButton.UseVisualStyleBackColor = true;
@@ -154,9 +146,9 @@
             // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(11F, 24F);
+            AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(982, 805);
+            ClientSize = new Size(625, 570);
             Controls.Add(saveButton);
             Controls.Add(resultRichTextBox);
             Controls.Add(pathRichTextBox);
@@ -167,7 +159,6 @@
             Controls.Add(masterPasswdTextBox);
             Controls.Add(masterPasswdLabel);
             FormBorderStyle = FormBorderStyle.FixedSingle;
-            Margin = new Padding(5, 4, 5, 4);
             MaximizeBox = false;
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
@@ -187,7 +178,6 @@
         private RichTextBox pathRichTextBox;
         private RichTextBox resultRichTextBox;
         private NotifyIcon notifyIcon1;
-        private Button button4;
         private OpenFileDialog openFileDialog1;
         private FolderBrowserDialog folderBrowserDialog1;
         private Button saveButton;
