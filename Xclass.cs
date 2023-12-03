@@ -1,4 +1,8 @@
-﻿using System.Security.Principal;
+﻿using Microsoft.VisualBasic;
+using System.Collections;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
+using System.Text;
 
 
 namespace Xpass
@@ -10,12 +14,29 @@ namespace Xpass
         public string password;
         public string encryptPw;
         public string port;
+        public bool isok;
     }
 
     class Xclass
     {
 
-        public static Xsh FileParser(string xshPath)
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ConvertSidToStringSid(IntPtr sid, out IntPtr stringSid);
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool LookupAccountName(
+            string lpSystemName,
+            string lpAccountName,
+            IntPtr Sid,
+            ref int cbSid,
+            StringBuilder ReferencedDomainName,
+            ref int cchReferencedDomainName,
+            out int peUse
+        );
+
+        public static Xsh FileParser(string xshPath, string sid)
         {
 
             Xsh xsh = new();
@@ -39,6 +60,21 @@ namespace Xpass
                         rawPass = rawPass.Replace("Password=", "");
                         rawPass = rawPass.Replace("\r\n", "");
                         xsh.encryptPw = rawPass;
+                        if (rawPass != null && rawPass != "")
+                        {
+                            var password = Decrypt(sid, rawPass);
+                            if (password == null)
+                            {
+                                xsh.isok = false;
+                                return xsh;
+                            }
+                            else
+                            {
+                                xsh.password = password;
+                            }
+                        };
+
+
                     }
                     else if (System.Text.RegularExpressions.Regex.IsMatch(rawPass, @"UserName=(.*?)"))
                     {
@@ -46,29 +82,39 @@ namespace Xpass
                     }
                 }
             }
+            xsh.isok = true;
             return xsh;
         }
 
         public static string GetSid()
         {
-            WindowsIdentity currentIdentity = WindowsIdentity.GetCurrent();
+            string userName = Environment.UserName;
+            string computerName = Environment.MachineName;
 
-            if (currentIdentity != null)
+            IntPtr sid = IntPtr.Zero;
+            int cbSid = 0;
+            int cchReferencedDomainName = 0;
+            int peUse;
+
+            LookupAccountName(computerName, userName, IntPtr.Zero, ref cbSid, null, ref cchReferencedDomainName, out peUse);
+
+            sid = Marshal.AllocHGlobal(cbSid);
+            StringBuilder referencedDomainName = new StringBuilder(cchReferencedDomainName);
+
+            if (LookupAccountName(computerName, userName, sid, ref cbSid, referencedDomainName, ref cchReferencedDomainName, out peUse))
             {
-                string userName = currentIdentity.Name;
+                IntPtr stringSid;
 
-                try
+                if (ConvertSidToStringSid(sid, out stringSid))
                 {
-                    string sid = new SecurityIdentifier(currentIdentity.User?.Value ?? "").ToString();
-                    return $"{userName}{sid}";
-                }
-                catch (Exception ex)
-                {
-                    return $"{userName} Error retrieving SID: {ex.Message}";
+                    string key = ReverseString(Marshal.PtrToStringAuto(stringSid)) + userName;
+                    // Free allocated memory
+                    Marshal.FreeHGlobal(sid);
+                    Marshal.FreeHGlobal(stringSid);
+                    return key;
                 }
             }
-
-            return "Unable to retrieve current Windows identity.";
+            return "";
         }
 
 
@@ -106,48 +152,95 @@ namespace Xpass
             return xshFiles;
         }
 
-        public static string Decrypt(string filePath)
+        public static string Decrypt(string sid, string encryptPw)
         {
 
-            return "";
+            byte[] v1 = Convert.FromBase64String(encryptPw);
+            byte[] key = System.Security.Cryptography.SHA256.Create().ComputeHash(Encoding.ASCII.GetBytes(sid));
+
+            using (var rc4 = new RC4(key))
+            {
+                byte[] v3 = rc4.TransformFinalBlock(v1, 0, v1.Length - 0x20);
+                byte[] expectedHash = new byte[32];
+                Array.Copy(v1, v1.Length - 32, expectedHash, 0, 32);
+
+                if (StructuralComparisons.StructuralEqualityComparer.Equals(System.Security.Cryptography.SHA256.Create().ComputeHash(v3), expectedHash))
+                {
+                    return Encoding.ASCII.GetString(v3);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        static string ReverseString(string input)
+        {
+            char[] charArray = input.ToCharArray();
+            Array.Reverse(charArray);
+            return new string(charArray);
         }
 
     }
 
-    class ARC4
+
+
+
+    class RC4 : IDisposable
     {
         private readonly byte[] s;
-        private byte i;
-        private byte j;
+        private int i, j;
 
-        public ARC4(byte[] key)
+        public RC4(byte[] key)
         {
             s = new byte[256];
-            for (int k = 0; k < 256; k++)
+            for (int i = 0; i < 256; i++)
             {
-                s[k] = (byte)k;
+                s[i] = (byte)i;
             }
 
             int j = 0;
-            for (int k = 0; k < 256; k++)
+            for (int i = 0; i < 256; i++)
             {
-                j = (j + s[k] + key[k % key.Length]) % 256;
-                (s[k], s[j]) = (s[j], s[k]);
+                j = (j + key[i % key.Length] + s[i]) & 255;
+                Swap(i, j);
             }
+
+            i = j = 0;
         }
 
-        public byte[] TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)
+        public byte[] TransformFinalBlock(byte[] inputBuffer, int offset, int count)
         {
-            byte[] outputBuffer = new byte[inputCount];
-            for (int k = 0; k < inputCount; k++)
+            byte[] outputBuffer = new byte[count];
+            TransformBlock(inputBuffer, offset, count, outputBuffer, 0);
+            return outputBuffer;
+        }
+
+        public int TransformBlock(byte[] inputBuffer, int offset, int count, byte[] outputBuffer, int outputOffset)
+        {
+            for (int k = 0; k < count; k++)
             {
-                i = (byte)((i + 1) % 256);
-                j = (byte)((j + s[i]) % 256);
-                (s[i], s[j]) = (s[j], s[i]);
-                outputBuffer[k] = (byte)(inputBuffer[k] ^ s[(s[i] + s[j]) % 256]);
+                i = (i + 1) & 255;
+                j = (j + s[i]) & 255;
+                Swap(i, j);
+                outputBuffer[k + outputOffset] = (byte)(inputBuffer[k + offset] ^ s[(s[i] + s[j]) & 255]);
             }
 
-            return outputBuffer;
+            return count;
+        }
+
+        private void Swap(int i, int j)
+        {
+            byte temp = s[i];
+            s[i] = s[j];
+            s[j] = temp;
+        }
+
+        public void Dispose()
+        {
+            Array.Clear(s, 0, s.Length);
+            i = j = 0;
         }
     }
 }

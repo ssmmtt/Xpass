@@ -51,22 +51,36 @@ namespace Xpass
         {
             if (selectedFiles.Count > 0)
             {
+                string sid;
+                if (masterPasswdTextBox.Text.Length > 0)
+                {
+                    sid = masterPasswdTextBox.Text;
+                }
+                else
+                {
+                    sid = Xclass.GetSid();
+                }
+
                 resultRichTextBox.Clear();
                 int index = 1;
                 foreach (string element in selectedFiles)
                 {
                     resultRichTextBox.AppendText(index + "：" + element + Environment.NewLine);
-                    var a = Xclass.FileParser(element);
-                    resultRichTextBox.AppendText("    Host：" + a.host + Environment.NewLine);
-                    resultRichTextBox.AppendText("    Port：" + a.port + Environment.NewLine);
-                    resultRichTextBox.AppendText("    UserName：" + a.userName + Environment.NewLine);
-                    resultRichTextBox.AppendText("    Password：" + a.encryptPw + Environment.NewLine);
+                    var session = Xclass.FileParser(element, sid);
+                    if (!session.isok)
+                    {
+                        MessageBox.Show(this, "解密失败，请检查主密码是否有误！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
+                    resultRichTextBox.AppendText("    Host：" + session.host + Environment.NewLine);
+                    resultRichTextBox.AppendText("    Port：" + session.port + Environment.NewLine);
+                    resultRichTextBox.AppendText("    UserName：" + session.userName + Environment.NewLine);
+                    resultRichTextBox.AppendText("    Password：" + session.password + Environment.NewLine);
 
 
                     resultRichTextBox.ScrollToCaret();
                     index++;
                 }
-                masterPasswdTextBox.Text = Xclass.GetSid();
             }
             else
             {
