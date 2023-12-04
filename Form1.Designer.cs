@@ -38,7 +38,6 @@
             pathRichTextBox = new RichTextBox();
             resultRichTextBox = new RichTextBox();
             notifyIcon1 = new NotifyIcon(components);
-            saveButton = new Button();
             openFileDialog1 = new OpenFileDialog();
             folderBrowserDialog1 = new FolderBrowserDialog();
             SuspendLayout();
@@ -99,7 +98,7 @@
             decryptButton.Font = new Font("Microsoft YaHei UI", 24F, FontStyle.Bold, GraphicsUnit.Point, 134);
             decryptButton.Location = new Point(486, 12);
             decryptButton.Name = "decryptButton";
-            decryptButton.Size = new Size(127, 89);
+            decryptButton.Size = new Size(127, 130);
             decryptButton.TabIndex = 5;
             decryptButton.Text = "解密";
             decryptButton.UseVisualStyleBackColor = false;
@@ -128,16 +127,6 @@
             notifyIcon1.Text = "notifyIcon1";
             notifyIcon1.Visible = true;
             // 
-            // saveButton
-            // 
-            saveButton.Enabled = false;
-            saveButton.Location = new Point(486, 107);
-            saveButton.Name = "saveButton";
-            saveButton.Size = new Size(127, 35);
-            saveButton.TabIndex = 8;
-            saveButton.Text = "保存";
-            saveButton.UseVisualStyleBackColor = true;
-            // 
             // openFileDialog1
             // 
             openFileDialog1.Filter = "会话文件(*.xsh)|*.xsh|所有文件(*.*)|*.*";
@@ -149,7 +138,6 @@
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(625, 570);
-            Controls.Add(saveButton);
             Controls.Add(resultRichTextBox);
             Controls.Add(pathRichTextBox);
             Controls.Add(decryptButton);
@@ -180,6 +168,5 @@
         private NotifyIcon notifyIcon1;
         private OpenFileDialog openFileDialog1;
         private FolderBrowserDialog folderBrowserDialog1;
-        private Button saveButton;
     }
 }
