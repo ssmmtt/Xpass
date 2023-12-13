@@ -40,49 +40,50 @@ namespace Xpass
         {
 
             Xsh xsh = new();
+            xsh.isok = true;
 
             using (StreamReader sr = new StreamReader(xshPath))
             {
-                string? rawPass;
-                while ((rawPass = sr.ReadLine()) != null)
+                string? line;
+                while ((line = sr.ReadLine()) != null)
                 {
-                    if (System.Text.RegularExpressions.Regex.IsMatch(rawPass, @"Host=(.*?)"))
+                    if (System.Text.RegularExpressions.Regex.IsMatch(line, @"Host=(.*?)"))
                     {
-                        xsh.host = rawPass.Replace("Host=", "");
+                        xsh.host = line.Replace("Host=", "");
                     }
-                    else if (System.Text.RegularExpressions.Regex.IsMatch(rawPass, @"^Port=(.*?)"))
+                    else if (System.Text.RegularExpressions.Regex.IsMatch(line, @"^Port=(.*?)"))
                     {
-                        xsh.port = rawPass.Replace("Port=", "");
+                        xsh.port = line.Replace("Port=", "");
 
                     }
-                    else if (System.Text.RegularExpressions.Regex.IsMatch(rawPass, @"Password=(.*?)"))
+                    else if (System.Text.RegularExpressions.Regex.IsMatch(line, @"Password=(.*?)"))
                     {
-                        rawPass = rawPass.Replace("Password=", "");
-                        rawPass = rawPass.Replace("\r\n", "");
-                        xsh.encryptPw = rawPass;
-                        if (rawPass != null && rawPass != "")
+                        line = line.Replace("Password=", "");
+                        line = line.Replace("\r\n", "");
+                        xsh.encryptPw = line;
+                        if (line != null && line != "")
                         {
-                            var password = Decrypt(sid, rawPass);
+                            var password = Decrypt(sid, line);
                             if (password == null)
                             {
                                 xsh.isok = false;
-                                return xsh;
                             }
                             else
                             {
                                 xsh.password = password;
                             }
+                        }
+                        else
+                        {
+                            xsh.password = "未保存密码";
                         };
-
-
                     }
-                    else if (System.Text.RegularExpressions.Regex.IsMatch(rawPass, @"UserName=(.*?)"))
+                    else if (System.Text.RegularExpressions.Regex.IsMatch(line, @"UserName=(.*?)"))
                     {
-                        xsh.userName = rawPass.Replace("UserName=", "");
+                        xsh.userName = line.Replace("UserName=", "");
                     }
                 }
             }
-            xsh.isok = true;
             return xsh;
         }
 
@@ -152,7 +153,7 @@ namespace Xpass
             return xshFiles;
         }
 
-        public static string Decrypt(string sid, string encryptPw)
+        public static string? Decrypt(string sid, string encryptPw)
         {
 
             byte[] v1 = Convert.FromBase64String(encryptPw);

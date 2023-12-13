@@ -1,3 +1,5 @@
+using System.Windows.Forms;
+
 namespace Xpass
 {
     public partial class Form1 : Form
@@ -47,6 +49,15 @@ namespace Xpass
             }
         }
 
+        private void AppendText(string text, Color color)
+        {
+            resultRichTextBox.SelectionStart = resultRichTextBox.TextLength;
+            resultRichTextBox.SelectionLength = 0;
+
+            resultRichTextBox.SelectionColor = color;
+            resultRichTextBox.AppendText(text);
+            resultRichTextBox.SelectionColor = resultRichTextBox.ForeColor;
+        }
         private void DecryptButton_Click(object sender, EventArgs e)
         {
             if (selectedFiles.Count > 0)
@@ -67,16 +78,17 @@ namespace Xpass
                 {
                     resultRichTextBox.AppendText(index + "：" + element + Environment.NewLine);
                     var session = Xclass.FileParser(element, sid);
-                    if (!session.isok)
-                    {
-                        MessageBox.Show(this, "解密失败，请检查主密码是否有误！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        return;
-                    }
                     resultRichTextBox.AppendText("    Host：" + session.host + Environment.NewLine);
                     resultRichTextBox.AppendText("    Port：" + session.port + Environment.NewLine);
                     resultRichTextBox.AppendText("    UserName：" + session.userName + Environment.NewLine);
-                    resultRichTextBox.AppendText("    Password：" + session.password + Environment.NewLine);
-
+                    if (session.isok)
+                    {
+                        resultRichTextBox.AppendText("    Password：" + session.password + Environment.NewLine);
+                    }
+                    else
+                    {
+                        AppendText("    Password：解密失败，确认主密码是否正确！" + Environment.NewLine, Color.Red);
+                    }
 
                     resultRichTextBox.ScrollToCaret();
                     index++;
@@ -85,9 +97,7 @@ namespace Xpass
             else
             {
                 MessageBox.Show(this, "请选择文件或者目录！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
             }
-
         }
 
         private void showPasswdCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -99,7 +109,6 @@ namespace Xpass
             else
             {
                 masterPasswdTextBox.PasswordChar = '*';
-
             }
         }
     }
