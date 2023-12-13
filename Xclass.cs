@@ -182,7 +182,6 @@ namespace Xpass
             Array.Reverse(charArray);
             return new string(charArray);
         }
-
     }
 
 
