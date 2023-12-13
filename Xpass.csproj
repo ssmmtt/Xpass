@@ -8,7 +8,14 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
 		<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
+		<ApplicationIcon>Resources\Icon.ico</ApplicationIcon>
+		<SignAssembly>False</SignAssembly>
+		<ErrorReport>none</ErrorReport>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Content Include="Resources\Icon.ico" />
+	</ItemGroup>
 
 
 

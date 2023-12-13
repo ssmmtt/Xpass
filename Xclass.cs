@@ -31,7 +31,7 @@ namespace Xpass
             string lpAccountName,
             IntPtr Sid,
             ref int cbSid,
-            StringBuilder ReferencedDomainName,
+            StringBuilder? ReferencedDomainName,
             ref int cchReferencedDomainName,
             out int peUse
         );

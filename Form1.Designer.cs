@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             masterPasswdLabel = new Label();
             masterPasswdTextBox = new TextBox();
             showPasswdCheckBox = new CheckBox();
@@ -147,6 +148,7 @@
             Controls.Add(masterPasswdTextBox);
             Controls.Add(masterPasswdLabel);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
