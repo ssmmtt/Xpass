@@ -11,6 +11,7 @@
 		<ApplicationIcon>Resources\Icon.ico</ApplicationIcon>
 		<SignAssembly>False</SignAssembly>
 		<ErrorReport>none</ErrorReport>
+		<IncludeSymbols>False</IncludeSymbols>
 	</PropertyGroup>
 
 	<ItemGroup>
