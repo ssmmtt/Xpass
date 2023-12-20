@@ -21,12 +21,6 @@ jobs:
       - name: Build
         run: .\build.ps1
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: Xpass
-          path: .\bin\Xpass\*.exe
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -39,11 +33,6 @@ jobs:
           prerelease: false
           body: ${{ github.event.head_commit.message }}
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: Xpass
-          path: ./artifacts
 
       - name: Upload Release Asset
         id: upload-release-asset
@@ -52,6 +41,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/*.exe
+          asset_path: ./bin/Xpass/*.exe
           asset_name: Xpass.exe
           asset_content_type: application/octet-stream
