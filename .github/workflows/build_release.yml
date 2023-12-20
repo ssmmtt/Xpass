@@ -21,8 +21,13 @@ jobs:
       - name: Build
         run: .\build.ps1
 
-      - name: List files in ./bin/Xpass/
-        run: Get-ChildItem -Path ./bin/Xpass/ -Recurse
+      - name: Get tag description
+          id: get_tag_description
+          run: |
+          $TAG_NAME=$(git describe --tags --exact-match)
+          $TAG_DESCRIPTION=$(git show $TAG_NAME --no-patch --format='%b' | Select-Object -Skip 3)
+          echo "Tag description: $TAG_DESCRIPTION"
+          echo "::set-output name=tag_description::$TAG_DESCRIPTION"
 
       - name: Create Release
         id: create_release
@@ -34,7 +39,7 @@ jobs:
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
-          body: ${{ github.event.head_commit.message }}
+          body: ${{ steps.get_tag_description.outputs.tag_description }}
 
 
       - name: Upload Release Asset
@@ -44,6 +49,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./bin/Xpass/*.exe
-          asset_name: Xpass.exe
+          asset_path: ./bin/Xpass
           asset_content_type: application/octet-stream
