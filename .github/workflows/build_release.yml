@@ -22,8 +22,8 @@ jobs:
         run: .\build.ps1
 
       - name: Get tag description
-          id: get_tag_description
-          run: |
+        id: get_tag_description
+        run: |
           $TAG_NAME=$(git describe --tags --exact-match)
           $TAG_DESCRIPTION=$(git show $TAG_NAME --no-patch --format='%b' | Select-Object -Skip 3)
           echo "Tag description: $TAG_DESCRIPTION"
@@ -40,7 +40,6 @@ jobs:
           draft: false
           prerelease: false
           body: ${{ steps.get_tag_description.outputs.tag_description }}
-
 
       - name: Upload Release Asset
         id: upload-release-asset
