@@ -37,10 +37,15 @@
             selectDirButton = new Button();
             decryptButton = new Button();
             pathRichTextBox = new RichTextBox();
-            resultRichTextBox = new RichTextBox();
             notifyIcon1 = new NotifyIcon(components);
             openFileDialog1 = new OpenFileDialog();
             folderBrowserDialog1 = new FolderBrowserDialog();
+            listView1 = new ListView();
+            filePath = new ColumnHeader();
+            host = new ColumnHeader();
+            port = new ColumnHeader();
+            username = new ColumnHeader();
+            password = new ColumnHeader();
             SuspendLayout();
             // 
             // masterPasswdLabel
@@ -114,15 +119,6 @@
             pathRichTextBox.TabIndex = 6;
             pathRichTextBox.Text = "";
             // 
-            // resultRichTextBox
-            // 
-            resultRichTextBox.Location = new Point(12, 177);
-            resultRichTextBox.Name = "resultRichTextBox";
-            resultRichTextBox.ReadOnly = true;
-            resultRichTextBox.Size = new Size(601, 381);
-            resultRichTextBox.TabIndex = 7;
-            resultRichTextBox.Text = "";
-            // 
             // notifyIcon1
             // 
             notifyIcon1.Text = "notifyIcon1";
@@ -134,12 +130,55 @@
             openFileDialog1.Multiselect = true;
             openFileDialog1.Title = "选择会话文件";
             // 
+            // listView1
+            // 
+            listView1.Activation = ItemActivation.OneClick;
+            listView1.BackColor = Color.White;
+            listView1.Columns.AddRange(new ColumnHeader[] { filePath, host, port, username, password });
+            listView1.FullRowSelect = true;
+            listView1.GridLines = true;
+            listView1.HeaderStyle = ColumnHeaderStyle.Nonclickable;
+            listView1.LabelEdit = true;
+            listView1.LabelWrap = false;
+            listView1.Location = new Point(12, 176);
+            listView1.Name = "listView1";
+            listView1.ShowGroups = false;
+            listView1.ShowItemToolTips = true;
+            listView1.Size = new Size(601, 380);
+            listView1.TabIndex = 7;
+            listView1.UseCompatibleStateImageBehavior = false;
+            listView1.View = View.Details;
+            // 
+            // filePath
+            // 
+            filePath.Text = "FilePath";
+            filePath.Width = 200;
+            // 
+            // host
+            // 
+            host.Text = "Host";
+            host.Width = 100;
+            // 
+            // port
+            // 
+            port.Text = "Port";
+            // 
+            // username
+            // 
+            username.Text = "Username";
+            username.Width = 75;
+            // 
+            // password
+            // 
+            password.Text = "Password";
+            password.Width = 166;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(625, 570);
-            Controls.Add(resultRichTextBox);
+            Controls.Add(listView1);
             Controls.Add(pathRichTextBox);
             Controls.Add(decryptButton);
             Controls.Add(selectDirButton);
@@ -166,9 +205,14 @@
         private Button selectDirButton;
         private Button decryptButton;
         private RichTextBox pathRichTextBox;
-        private RichTextBox resultRichTextBox;
         private NotifyIcon notifyIcon1;
         private OpenFileDialog openFileDialog1;
         private FolderBrowserDialog folderBrowserDialog1;
+        private ListView listView1;
+        private ColumnHeader filePath;
+        private ColumnHeader host;
+        private ColumnHeader port;
+        private ColumnHeader username;
+        private ColumnHeader password;
     }
 }

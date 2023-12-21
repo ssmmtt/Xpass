@@ -8,6 +8,42 @@ namespace Xpass
         public Form1()
         {
             InitializeComponent();
+            // 设置每一列的最低宽度
+            // ColumnWidthChanging 事件处理程序
+            listView1.ColumnWidthChanging += (sender, e) =>
+            {
+                if (e.NewWidth < 30)
+                {
+                    e.Cancel = true; // 取消宽度改变
+                    e.NewWidth = 30; // 设置宽度为最低宽度
+                }
+            };
+
+
+            //listView1.DrawColumnHeader += listView1_DrawColumnHeader;
+            //listView1.DrawSubItem += listView1_DrawSubItem;
+        }
+
+        private void listView1_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
+        {
+            // 在这里处理表头的自定义绘制逻辑
+            e.DrawDefault = true; // 绘制默认表头
+        }
+        private void listView1_DrawSubItem(object sender, DrawListViewSubItemEventArgs e)
+        {
+            if (e.Item.Selected)
+            {
+                SolidBrush brush = new SolidBrush(Color.FromArgb(204, 213, 240));
+
+                e.Graphics.FillRectangle(brush, e.Bounds);    //选择后的颜色
+            }
+            else
+            {
+                if (e.ItemIndex % 2 == 0)
+                    e.Graphics.FillRectangle(Brushes.White, e.Bounds);     //间隔色
+                else
+                    e.Graphics.FillRectangle(Brushes.YellowGreen, e.Bounds);
+            }
         }
 
         private void SelectFilesButton_Click(object sender, EventArgs e)
@@ -49,15 +85,60 @@ namespace Xpass
             }
         }
 
-        private void AppendText(string text, Color color)
-        {
-            resultRichTextBox.SelectionStart = resultRichTextBox.TextLength;
-            resultRichTextBox.SelectionLength = 0;
+        //private void AppendText(string text, Color color)
+        //{
+        //    resultRichTextBox.SelectionStart = resultRichTextBox.TextLength;
+        //    resultRichTextBox.SelectionLength = 0;
 
-            resultRichTextBox.SelectionColor = color;
-            resultRichTextBox.AppendText(text);
-            resultRichTextBox.SelectionColor = resultRichTextBox.ForeColor;
-        }
+        //    resultRichTextBox.SelectionColor = color;
+        //    resultRichTextBox.AppendText(text);
+        //    resultRichTextBox.SelectionColor = resultRichTextBox.ForeColor;
+        //}
+
+
+        //private void DecryptButton_Click(object sender, EventArgs e)
+        //{
+        //    if (selectedFiles.Count > 0)
+        //    {
+        //        string sid;
+        //        if (masterPasswdTextBox.Text.Length > 0)
+        //        {
+        //            sid = masterPasswdTextBox.Text;
+        //        }
+        //        else
+        //        {
+        //            sid = Xclass.GetSid();
+        //        }
+
+        //        resultRichTextBox.Clear();
+        //        int index = 1;
+        //        foreach (string element in selectedFiles)
+        //        {
+        //            resultRichTextBox.AppendText(index + "：" + element + Environment.NewLine);
+        //            var session = Xclass.FileParser(element, sid);
+        //            resultRichTextBox.AppendText("    Host：" + session.host + Environment.NewLine);
+        //            resultRichTextBox.AppendText("    Port：" + session.port + Environment.NewLine);
+        //            resultRichTextBox.AppendText("    UserName：" + session.userName + Environment.NewLine);
+        //            if (session.isok)
+        //            {
+        //                resultRichTextBox.AppendText("    Password：" + session.password + Environment.NewLine);
+        //            }
+        //            else
+        //            {
+        //                AppendText("    Password：解密失败，确认主密码是否正确！" + Environment.NewLine, Color.Red);
+        //            }
+
+        //            resultRichTextBox.ScrollToCaret();
+        //            index++;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show(this, "请选择文件或者目录！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        //    }
+        //}
+
+
         private void DecryptButton_Click(object sender, EventArgs e)
         {
             if (selectedFiles.Count > 0)
@@ -72,25 +153,20 @@ namespace Xpass
                     sid = Xclass.GetSid();
                 }
 
-                resultRichTextBox.Clear();
+                listView1.Items.Clear();
                 int index = 1;
                 foreach (string element in selectedFiles)
                 {
-                    resultRichTextBox.AppendText(index + "：" + element + Environment.NewLine);
                     var session = Xclass.FileParser(element, sid);
-                    resultRichTextBox.AppendText("    Host：" + session.host + Environment.NewLine);
-                    resultRichTextBox.AppendText("    Port：" + session.port + Environment.NewLine);
-                    resultRichTextBox.AppendText("    UserName：" + session.userName + Environment.NewLine);
+                    var password = "解密失败，确认主密码是否正确！";
                     if (session.isok)
                     {
-                        resultRichTextBox.AppendText("    Password：" + session.password + Environment.NewLine);
-                    }
-                    else
-                    {
-                        AppendText("    Password：解密失败，确认主密码是否正确！" + Environment.NewLine, Color.Red);
+                        password = session.password;
                     }
 
-                    resultRichTextBox.ScrollToCaret();
+                    ListViewItem newItem = new ListViewItem(new[] { element, session.host, session.port, session.userName, password });
+                    listView1.Items.Add(newItem);
+                    newItem.EnsureVisible();
                     index++;
                 }
             }
@@ -111,6 +187,7 @@ namespace Xpass
                 masterPasswdTextBox.PasswordChar = '*';
             }
         }
+
     }
 
 
