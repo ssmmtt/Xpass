@@ -2,8 +2,9 @@
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net8.0-windows</TargetFramework>
+		<TargetFramework>net6.0-windows</TargetFramework>
 		<Nullable>enable</Nullable>
+		<LangVersion>preview</LangVersion>
 		<UseWindowsForms>true</UseWindowsForms>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>

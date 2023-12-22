@@ -101,7 +101,7 @@
             // decryptButton
             // 
             decryptButton.BackColor = Color.DeepSkyBlue;
-            decryptButton.Font = new Font("Microsoft YaHei UI", 24F, FontStyle.Bold, GraphicsUnit.Point, 134);
+            decryptButton.Font = new Font("Microsoft YaHei UI", 24F, FontStyle.Bold, GraphicsUnit.Point);
             decryptButton.Location = new Point(486, 12);
             decryptButton.Name = "decryptButton";
             decryptButton.Size = new Size(127, 130);

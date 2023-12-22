@@ -189,7 +189,4 @@ namespace Xpass
         }
 
     }
-
-
-
 }
