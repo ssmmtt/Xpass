@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             masterPasswdLabel = new Label();
             masterPasswdTextBox = new TextBox();
@@ -40,12 +41,8 @@
             notifyIcon1 = new NotifyIcon(components);
             openFileDialog1 = new OpenFileDialog();
             folderBrowserDialog1 = new FolderBrowserDialog();
-            listView1 = new ListView();
-            filePath = new ColumnHeader();
-            host = new ColumnHeader();
-            port = new ColumnHeader();
-            username = new ColumnHeader();
-            password = new ColumnHeader();
+            dataGridView1 = new DataGridView();
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
             // masterPasswdLabel
@@ -62,15 +59,15 @@
             masterPasswdTextBox.Location = new Point(72, 149);
             masterPasswdTextBox.Name = "masterPasswdTextBox";
             masterPasswdTextBox.PasswordChar = '*';
-            masterPasswdTextBox.PlaceholderText = "没有设置就不填";
-            masterPasswdTextBox.Size = new Size(458, 23);
+            masterPasswdTextBox.PlaceholderText = "如果设置了主密码请输入";
+            masterPasswdTextBox.Size = new Size(519, 23);
             masterPasswdTextBox.TabIndex = 5;
             // 
             // showPasswdCheckBox
             // 
             showPasswdCheckBox.AutoSize = true;
             showPasswdCheckBox.ForeColor = SystemColors.ControlDarkDark;
-            showPasswdCheckBox.Location = new Point(536, 149);
+            showPasswdCheckBox.Location = new Point(597, 149);
             showPasswdCheckBox.Name = "showPasswdCheckBox";
             showPasswdCheckBox.Size = new Size(75, 21);
             showPasswdCheckBox.TabIndex = 2;
@@ -80,9 +77,11 @@
             // 
             // selectFilesButton
             // 
+            selectFilesButton.Font = new Font("Microsoft YaHei UI", 15F, FontStyle.Regular, GraphicsUnit.Point);
+            selectFilesButton.ForeColor = Color.DodgerBlue;
             selectFilesButton.Location = new Point(12, 11);
             selectFilesButton.Name = "selectFilesButton";
-            selectFilesButton.Size = new Size(225, 44);
+            selectFilesButton.Size = new Size(250, 50);
             selectFilesButton.TabIndex = 3;
             selectFilesButton.Text = "选择文件";
             selectFilesButton.UseVisualStyleBackColor = true;
@@ -90,9 +89,11 @@
             // 
             // selectDirButton
             // 
-            selectDirButton.Location = new Point(253, 11);
+            selectDirButton.Font = new Font("Microsoft YaHei UI", 15F, FontStyle.Regular, GraphicsUnit.Point);
+            selectDirButton.ForeColor = Color.DodgerBlue;
+            selectDirButton.Location = new Point(286, 11);
             selectDirButton.Name = "selectDirButton";
-            selectDirButton.Size = new Size(225, 44);
+            selectDirButton.Size = new Size(250, 50);
             selectDirButton.TabIndex = 4;
             selectDirButton.Text = "选择目录";
             selectDirButton.UseVisualStyleBackColor = true;
@@ -102,9 +103,9 @@
             // 
             decryptButton.BackColor = Color.DeepSkyBlue;
             decryptButton.Font = new Font("Microsoft YaHei UI", 24F, FontStyle.Bold, GraphicsUnit.Point);
-            decryptButton.Location = new Point(486, 12);
+            decryptButton.Location = new Point(542, 11);
             decryptButton.Name = "decryptButton";
-            decryptButton.Size = new Size(127, 130);
+            decryptButton.Size = new Size(130, 130);
             decryptButton.TabIndex = 5;
             decryptButton.Text = "解密";
             decryptButton.UseVisualStyleBackColor = false;
@@ -112,10 +113,10 @@
             // 
             // pathRichTextBox
             // 
-            pathRichTextBox.Location = new Point(12, 61);
+            pathRichTextBox.Location = new Point(12, 67);
             pathRichTextBox.Name = "pathRichTextBox";
             pathRichTextBox.ReadOnly = true;
-            pathRichTextBox.Size = new Size(466, 81);
+            pathRichTextBox.Size = new Size(524, 75);
             pathRichTextBox.TabIndex = 6;
             pathRichTextBox.Text = "";
             // 
@@ -130,55 +131,39 @@
             openFileDialog1.Multiselect = true;
             openFileDialog1.Title = "选择会话文件";
             // 
-            // listView1
+            // dataGridView1
             // 
-            listView1.Activation = ItemActivation.OneClick;
-            listView1.BackColor = Color.White;
-            listView1.Columns.AddRange(new ColumnHeader[] { filePath, host, port, username, password });
-            listView1.FullRowSelect = true;
-            listView1.GridLines = true;
-            listView1.HeaderStyle = ColumnHeaderStyle.Nonclickable;
-            listView1.LabelEdit = true;
-            listView1.LabelWrap = false;
-            listView1.Location = new Point(12, 176);
-            listView1.Name = "listView1";
-            listView1.ShowGroups = false;
-            listView1.ShowItemToolTips = true;
-            listView1.Size = new Size(601, 380);
-            listView1.TabIndex = 7;
-            listView1.UseCompatibleStateImageBehavior = false;
-            listView1.View = View.Details;
-            // 
-            // filePath
-            // 
-            filePath.Text = "FilePath";
-            filePath.Width = 200;
-            // 
-            // host
-            // 
-            host.Text = "Host";
-            host.Width = 100;
-            // 
-            // port
-            // 
-            port.Text = "Port";
-            // 
-            // username
-            // 
-            username.Text = "Username";
-            username.Width = 75;
-            // 
-            // password
-            // 
-            password.Text = "Password";
-            password.Width = 166;
+            dataGridView1.AllowUserToAddRows = false;
+            dataGridView1.AllowUserToDeleteRows = false;
+            dataGridView1.AllowUserToOrderColumns = true;
+            dataGridView1.AllowUserToResizeRows = false;
+            dataGridView1.BackgroundColor = Color.White;
+            dataGridView1.BorderStyle = BorderStyle.Fixed3D;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = SystemColors.Control;
+            dataGridViewCellStyle1.Font = new Font("Microsoft YaHei UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            dataGridViewCellStyle1.ForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle1.Padding = new Padding(0, 5, 0, 5);
+            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
+            dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView1.Location = new Point(12, 178);
+            dataGridView1.Name = "dataGridView1";
+            dataGridView1.ReadOnly = true;
+            dataGridView1.RowHeadersWidth = 30;
+            dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            dataGridView1.RowTemplate.Height = 25;
+            dataGridView1.Size = new Size(660, 371);
+            dataGridView1.TabIndex = 7;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(625, 570);
-            Controls.Add(listView1);
+            ClientSize = new Size(684, 561);
+            Controls.Add(dataGridView1);
             Controls.Add(pathRichTextBox);
             Controls.Add(decryptButton);
             Controls.Add(selectDirButton);
@@ -192,6 +177,7 @@
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Xpass";
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -208,11 +194,7 @@
         private NotifyIcon notifyIcon1;
         private OpenFileDialog openFileDialog1;
         private FolderBrowserDialog folderBrowserDialog1;
-        private ListView listView1;
-        private ColumnHeader filePath;
-        private ColumnHeader host;
-        private ColumnHeader port;
-        private ColumnHeader username;
-        private ColumnHeader password;
+        private DataGridView dataGridView1;
+
     }
 }

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace Xpass
@@ -8,42 +9,67 @@ namespace Xpass
         public Form1()
         {
             InitializeComponent();
-            // 设置每一列的最低宽度
-            // ColumnWidthChanging 事件处理程序
-            listView1.ColumnWidthChanging += (sender, e) =>
+            ImproveDataGridView();
+        }
+
+        private void ImproveDataGridView()
+        {
+
+            // 启用隔行交替颜色
+            dataGridView1.RowsDefaultCellStyle.BackColor = Color.White;
+            dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
+
+
+            var indexColumn = new DataGridViewTextBoxColumn
             {
-                if (e.NewWidth < 30)
-                {
-                    e.Cancel = true; // 取消宽度改变
-                    e.NewWidth = 30; // 设置宽度为最低宽度
-                }
+                Name = "IndexColumn",
+                HeaderText = "序号",
+                Width = 40
             };
+            indexColumn.HeaderCell.Style.WrapMode = DataGridViewTriState.False;
 
-
-            //listView1.DrawColumnHeader += listView1_DrawColumnHeader;
-            //listView1.DrawSubItem += listView1_DrawSubItem;
-        }
-
-        private void listView1_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
-        {
-            // 在这里处理表头的自定义绘制逻辑
-            e.DrawDefault = true; // 绘制默认表头
-        }
-        private void listView1_DrawSubItem(object sender, DrawListViewSubItemEventArgs e)
-        {
-            if (e.Item.Selected)
+            var sessionPathColumn = new DataGridViewTextBoxColumn
             {
-                SolidBrush brush = new SolidBrush(Color.FromArgb(204, 213, 240));
+                Name = "SessionPathColumn",
+                HeaderText = "会话路径",
+                Width = 200
+            };
+            sessionPathColumn.HeaderCell.Style.WrapMode = DataGridViewTriState.False;
 
-                e.Graphics.FillRectangle(brush, e.Bounds);    //选择后的颜色
-            }
-            else
+            var hostColumn = new DataGridViewTextBoxColumn
             {
-                if (e.ItemIndex % 2 == 0)
-                    e.Graphics.FillRectangle(Brushes.White, e.Bounds);     //间隔色
-                else
-                    e.Graphics.FillRectangle(Brushes.YellowGreen, e.Bounds);
-            }
+                Name = "HostAddressColumn",
+                HeaderText = "主机地址",
+                Width = 110
+            };
+            hostColumn.HeaderCell.Style.WrapMode = DataGridViewTriState.False;
+
+            var portColumn = new DataGridViewTextBoxColumn
+            {
+                Name = "PortColumn",
+                HeaderText = "端口",
+                Width = 50
+            };
+            portColumn.HeaderCell.Style.WrapMode = DataGridViewTriState.False;
+
+            var usernameColumn = new DataGridViewTextBoxColumn
+            {
+                Name = "UsernameColumn",
+                HeaderText = "用户名",
+                Width = 60
+            };
+            usernameColumn.HeaderCell.Style.WrapMode = DataGridViewTriState.False;
+
+            var passwordColumn = new DataGridViewTextBoxColumn
+            {
+                Name = "PasswordColumn",
+                HeaderText = "密码",
+                Width = dataGridView1.Width - 2 - (dataGridView1.RowHeadersWidth + indexColumn.Width + sessionPathColumn.Width + hostColumn.Width + portColumn.Width + usernameColumn.Width)
+
+            };
+            passwordColumn.HeaderCell.Style.WrapMode = DataGridViewTriState.False;
+            dataGridView1.Columns.AddRange(new DataGridViewTextBoxColumn[] { indexColumn, sessionPathColumn, hostColumn, portColumn, usernameColumn, passwordColumn });
+
         }
 
         private void SelectFilesButton_Click(object sender, EventArgs e)
@@ -85,59 +111,27 @@ namespace Xpass
             }
         }
 
-        //private void AppendText(string text, Color color)
-        //{
-        //    resultRichTextBox.SelectionStart = resultRichTextBox.TextLength;
-        //    resultRichTextBox.SelectionLength = 0;
+        private void AddRowToDataGridView(List<object> rowData)
+        {
+            // 创建新的行
+            DataGridViewRow row = new DataGridViewRow();
 
-        //    resultRichTextBox.SelectionColor = color;
-        //    resultRichTextBox.AppendText(text);
-        //    resultRichTextBox.SelectionColor = resultRichTextBox.ForeColor;
-        //}
+            // 添加每一列的单元格
+            for (int i = 0; i < rowData.Count; i++)
+            {
+                DataGridViewCell cell = new DataGridViewTextBoxCell();
+                cell.Value = rowData[i];
+                if (i == 5 && rowData[i] == "确认主密码是否正确！")
+                {
+                    cell.Style.ForeColor = Color.Red;
+                }
 
+                row.Cells.Add(cell);
+            }
 
-        //private void DecryptButton_Click(object sender, EventArgs e)
-        //{
-        //    if (selectedFiles.Count > 0)
-        //    {
-        //        string sid;
-        //        if (masterPasswdTextBox.Text.Length > 0)
-        //        {
-        //            sid = masterPasswdTextBox.Text;
-        //        }
-        //        else
-        //        {
-        //            sid = Xclass.GetSid();
-        //        }
-
-        //        resultRichTextBox.Clear();
-        //        int index = 1;
-        //        foreach (string element in selectedFiles)
-        //        {
-        //            resultRichTextBox.AppendText(index + "：" + element + Environment.NewLine);
-        //            var session = Xclass.FileParser(element, sid);
-        //            resultRichTextBox.AppendText("    Host：" + session.host + Environment.NewLine);
-        //            resultRichTextBox.AppendText("    Port：" + session.port + Environment.NewLine);
-        //            resultRichTextBox.AppendText("    UserName：" + session.userName + Environment.NewLine);
-        //            if (session.isok)
-        //            {
-        //                resultRichTextBox.AppendText("    Password：" + session.password + Environment.NewLine);
-        //            }
-        //            else
-        //            {
-        //                AppendText("    Password：解密失败，确认主密码是否正确！" + Environment.NewLine, Color.Red);
-        //            }
-
-        //            resultRichTextBox.ScrollToCaret();
-        //            index++;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        MessageBox.Show(this, "请选择文件或者目录！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //    }
-        //}
-
+            // 将行添加到DataGridView
+            dataGridView1.Rows.Add(row);
+        }
 
         private void DecryptButton_Click(object sender, EventArgs e)
         {
@@ -152,21 +146,19 @@ namespace Xpass
                 {
                     sid = Xclass.GetSid();
                 }
-
-                listView1.Items.Clear();
+                dataGridView1.Rows.Clear();
                 int index = 1;
                 foreach (string element in selectedFiles)
                 {
                     var session = Xclass.FileParser(element, sid);
-                    var password = "解密失败，确认主密码是否正确！";
-                    if (session.isok)
+                    var error = "确认主密码是否正确！";
+                    if (!session.isok)
                     {
-                        password = session.password;
+                        session.password = error;
                     }
 
-                    ListViewItem newItem = new ListViewItem(new[] { element, session.host, session.port, session.userName, password });
-                    listView1.Items.Add(newItem);
-                    newItem.EnsureVisible();
+                    AddRowToDataGridView(new List<object> { index, element, session.host, session.port, session.userName, session.password });
+
                     index++;
                 }
             }

@@ -73,10 +73,6 @@ namespace Xpass
                                 xsh.password = password;
                             }
                         }
-                        else
-                        {
-                            xsh.password = "未保存密码";
-                        };
                     }
                     else if (System.Text.RegularExpressions.Regex.IsMatch(line, @"UserName=(.*?)"))
                     {
