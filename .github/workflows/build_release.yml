@@ -26,6 +26,12 @@ jobs:
         with:
           dotnet-version: "6.0.x"
 
+      - name: Set up Chinese environment
+        run: |
+          chcp 65001
+        shell: cmd
+        if: runner.os == 'Windows'
+
       - name: Build
         run: ./build.ps1
 
