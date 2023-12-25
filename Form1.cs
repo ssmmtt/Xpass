@@ -1,16 +1,39 @@
-﻿using System.Data.Common;
-using System.Diagnostics;
-using System.Windows.Forms;
-
-namespace Xpass
+﻿namespace Xpass
 {
     public partial class Form1 : Form
     {
+        readonly string appKey = "Software\\Xpass";
         private List<string> selectedFiles = [];
         public Form1()
         {
             InitializeComponent();
             ImproveDataGridView();
+            LoadLastConfig();
+        }
+
+        private void LoadLastConfig()
+        {
+            string path = RegistryCache.ReadFromRegistry(appKey, "path");
+            string passwd = RegistryCache.ReadFromRegistry(appKey, "passwd");
+            if (path != null)
+            {
+                pathRichTextBox.Text = path;
+                string[] tmp = path.Split("\n");
+                if (tmp.Length == 1 && !tmp[0].EndsWith(".xsh"))
+                {
+                    // 此时是目录
+                    selectedFiles = Xclass.GetXshFiles(tmp[0]);
+                }
+                else
+                {
+                    // 文件列表
+                    selectedFiles.AddRange(tmp.Take(tmp.Length - 1));
+                }
+            }
+            if (passwd != null)
+            {
+                masterPasswdTextBox.Text = passwd;
+            }
         }
 
         private void ImproveDataGridView()
@@ -27,7 +50,7 @@ namespace Xpass
             for (int i = 0; i < dataGridView1.Columns.Count; i++)
             {
                 dataGridView1.Columns[i].HeaderCell.Style.WrapMode = DataGridViewTriState.False;
-                if (i == dataGridView1.Columns.Count-1)
+                if (i == dataGridView1.Columns.Count - 1)
                 {
                     dataGridView1.Columns[i].Width = totalWidth - 2 - (dataGridView1.Columns[0].Width + dataGridView1.Columns[1].Width + dataGridView1.Columns[2].Width + dataGridView1.Columns[3].Width + dataGridView1.Columns[4].Width);
                     break;
@@ -36,9 +59,6 @@ namespace Xpass
                 dataGridView1.Columns[i].Width = newWidth;
             }
         }
-
-
-
 
         private void SelectFilesButton_Click(object sender, EventArgs e)
         {
@@ -56,7 +76,7 @@ namespace Xpass
                     // 将数组的每个元素写入 RichTextBox，每个元素占据一行
                     foreach (string element in selectedFiles)
                     {
-                        pathRichTextBox.AppendText(element + Environment.NewLine);
+                        pathRichTextBox.AppendText(element + "\n");
                     }
                 }
 
@@ -74,7 +94,6 @@ namespace Xpass
                     selectedFiles.Clear();
                     pathRichTextBox.AppendText(folderBrowserDialog1.SelectedPath);
                     selectedFiles = Xclass.GetXshFiles(folderBrowserDialog1.SelectedPath);
-
                 }
             }
         }
@@ -129,8 +148,12 @@ namespace Xpass
 
                     index++;
                 }
+                // 写入配置到注册表
+                RegistryCache.WriteToRegistry(appKey, "path", pathRichTextBox.Text);
+                RegistryCache.WriteToRegistry(appKey, "passwd", masterPasswdTextBox.Text);
+
             }
-            else if(pathRichTextBox.Text == "")
+            else if (pathRichTextBox.Text == "")
             {
                 MessageBox.Show(this, "请选择文件或者目录！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
