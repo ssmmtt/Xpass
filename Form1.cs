@@ -21,7 +21,7 @@ namespace Xpass
             dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
 
             // 百分比
-            double[] columnPercentages = [6, 25, 18, 8, 12, 20];
+            double[] columnPercentages = [7, 25, 18, 8, 12, 20];
             int totalWidth = dataGridView1.Width - dataGridView1.RowHeadersWidth;
             // 分配列宽
             for (int i = 0; i < dataGridView1.Columns.Count; i++)
