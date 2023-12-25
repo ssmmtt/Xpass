@@ -1,3 +1,4 @@
+using System.Data.Common;
 using System.Diagnostics;
 using System.Windows.Forms;
 
@@ -19,58 +20,25 @@ namespace Xpass
             dataGridView1.RowsDefaultCellStyle.BackColor = Color.White;
             dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
 
-
-            var indexColumn = new DataGridViewTextBoxColumn
+            // 百分比
+            double[] columnPercentages = [6, 25, 18, 8, 12, 20];
+            int totalWidth = dataGridView1.Width - dataGridView1.RowHeadersWidth;
+            // 分配列宽
+            for (int i = 0; i < dataGridView1.Columns.Count; i++)
             {
-                Name = "IndexColumn",
-                HeaderText = "序号",
-                Width = 40
-            };
-            indexColumn.HeaderCell.Style.WrapMode = DataGridViewTriState.False;
-
-            var sessionPathColumn = new DataGridViewTextBoxColumn
-            {
-                Name = "SessionPathColumn",
-                HeaderText = "会话路径",
-                Width = 200
-            };
-            sessionPathColumn.HeaderCell.Style.WrapMode = DataGridViewTriState.False;
-
-            var hostColumn = new DataGridViewTextBoxColumn
-            {
-                Name = "HostAddressColumn",
-                HeaderText = "主机地址",
-                Width = 110
-            };
-            hostColumn.HeaderCell.Style.WrapMode = DataGridViewTriState.False;
-
-            var portColumn = new DataGridViewTextBoxColumn
-            {
-                Name = "PortColumn",
-                HeaderText = "端口",
-                Width = 50
-            };
-            portColumn.HeaderCell.Style.WrapMode = DataGridViewTriState.False;
-
-            var usernameColumn = new DataGridViewTextBoxColumn
-            {
-                Name = "UsernameColumn",
-                HeaderText = "用户名",
-                Width = 60
-            };
-            usernameColumn.HeaderCell.Style.WrapMode = DataGridViewTriState.False;
-
-            var passwordColumn = new DataGridViewTextBoxColumn
-            {
-                Name = "PasswordColumn",
-                HeaderText = "密码",
-                Width = dataGridView1.Width - 2 - (dataGridView1.RowHeadersWidth + indexColumn.Width + sessionPathColumn.Width + hostColumn.Width + portColumn.Width + usernameColumn.Width)
-
-            };
-            passwordColumn.HeaderCell.Style.WrapMode = DataGridViewTriState.False;
-            dataGridView1.Columns.AddRange(new DataGridViewTextBoxColumn[] { indexColumn, sessionPathColumn, hostColumn, portColumn, usernameColumn, passwordColumn });
-
+                dataGridView1.Columns[i].HeaderCell.Style.WrapMode = DataGridViewTriState.False;
+                if (i == dataGridView1.Columns.Count-1)
+                {
+                    dataGridView1.Columns[i].Width = totalWidth - 2 - (dataGridView1.Columns[0].Width + dataGridView1.Columns[1].Width + dataGridView1.Columns[2].Width + dataGridView1.Columns[3].Width + dataGridView1.Columns[4].Width);
+                    break;
+                }
+                int newWidth = (int)(totalWidth * columnPercentages[i] / 100);
+                dataGridView1.Columns[i].Width = newWidth;
+            }
         }
+
+
+
 
         private void SelectFilesButton_Click(object sender, EventArgs e)
         {
@@ -162,9 +130,14 @@ namespace Xpass
                     index++;
                 }
             }
-            else
+            else if(pathRichTextBox.Text == "")
             {
                 MessageBox.Show(this, "请选择文件或者目录！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show(this, "未找到会话文件！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
             }
         }
 
