@@ -1,4 +1,4 @@
-using System.Data.Common;
+ï»¿using System.Data.Common;
 using System.Diagnostics;
 using System.Windows.Forms;
 
@@ -16,14 +16,14 @@ namespace Xpass
         private void ImproveDataGridView()
         {
 
-            // ÆôÓÃ¸ôĞĞ½»ÌæÑÕÉ«
+            // å¯ç”¨éš”è¡Œäº¤æ›¿é¢œè‰²
             dataGridView1.RowsDefaultCellStyle.BackColor = Color.White;
             dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
 
-            // °Ù·Ö±È
+            // ç™¾åˆ†æ¯”
             double[] columnPercentages = [6, 25, 18, 8, 12, 20];
             int totalWidth = dataGridView1.Width - dataGridView1.RowHeadersWidth;
-            // ·ÖÅäÁĞ¿í
+            // åˆ†é…åˆ—å®½
             for (int i = 0; i < dataGridView1.Columns.Count; i++)
             {
                 dataGridView1.Columns[i].HeaderCell.Style.WrapMode = DataGridViewTriState.False;
@@ -42,7 +42,7 @@ namespace Xpass
 
         private void SelectFilesButton_Click(object sender, EventArgs e)
         {
-            // Èç¹ûÓÃ»§µã»÷ÁË "È·¶¨" °´Å¥
+            // å¦‚æœç”¨æˆ·ç‚¹å‡»äº† "ç¡®å®š" æŒ‰é’®
             if (openFileDialog1.ShowDialog(this) == DialogResult.OK)
             {
 
@@ -50,10 +50,10 @@ namespace Xpass
                 {
                     pathRichTextBox.Clear();
                     selectedFiles.Clear();
-                    // »ñÈ¡ÓÃ»§Ñ¡ÔñµÄÎÄ¼şÂ·¾¶
+                    // è·å–ç”¨æˆ·é€‰æ‹©çš„æ–‡ä»¶è·¯å¾„
                     selectedFiles.AddRange(openFileDialog1.FileNames);
 
-                    // ½«Êı×éµÄÃ¿¸öÔªËØĞ´Èë RichTextBox£¬Ã¿¸öÔªËØÕ¼¾İÒ»ĞĞ
+                    // å°†æ•°ç»„çš„æ¯ä¸ªå…ƒç´ å†™å…¥ RichTextBoxï¼Œæ¯ä¸ªå…ƒç´ å æ®ä¸€è¡Œ
                     foreach (string element in selectedFiles)
                     {
                         pathRichTextBox.AppendText(element + Environment.NewLine);
@@ -69,7 +69,7 @@ namespace Xpass
             {
                 if (!string.IsNullOrEmpty(folderBrowserDialog1.SelectedPath))
                 {
-                    // Çå¿Õ RichTextBox
+                    // æ¸…ç©º RichTextBox
                     pathRichTextBox.Clear();
                     selectedFiles.Clear();
                     pathRichTextBox.AppendText(folderBrowserDialog1.SelectedPath);
@@ -81,15 +81,15 @@ namespace Xpass
 
         private void AddRowToDataGridView(List<object> rowData)
         {
-            // ´´½¨ĞÂµÄĞĞ
+            // åˆ›å»ºæ–°çš„è¡Œ
             DataGridViewRow row = new DataGridViewRow();
 
-            // Ìí¼ÓÃ¿Ò»ÁĞµÄµ¥Ôª¸ñ
+            // æ·»åŠ æ¯ä¸€åˆ—çš„å•å…ƒæ ¼
             for (int i = 0; i < rowData.Count; i++)
             {
                 DataGridViewCell cell = new DataGridViewTextBoxCell();
                 cell.Value = rowData[i];
-                if (i == 5 && rowData[i] == "È·ÈÏÖ÷ÃÜÂëÊÇ·ñÕıÈ·£¡")
+                if (i == 5 && rowData[i] == "ç¡®è®¤ä¸»å¯†ç æ˜¯å¦æ­£ç¡®ï¼")
                 {
                     cell.Style.ForeColor = Color.Red;
                 }
@@ -97,7 +97,7 @@ namespace Xpass
                 row.Cells.Add(cell);
             }
 
-            // ½«ĞĞÌí¼Óµ½DataGridView
+            // å°†è¡Œæ·»åŠ åˆ°DataGridView
             dataGridView1.Rows.Add(row);
         }
 
@@ -119,7 +119,7 @@ namespace Xpass
                 foreach (string element in selectedFiles)
                 {
                     var session = Xclass.FileParser(element, sid);
-                    var error = "È·ÈÏÖ÷ÃÜÂëÊÇ·ñÕıÈ·£¡";
+                    var error = "ç¡®è®¤ä¸»å¯†ç æ˜¯å¦æ­£ç¡®ï¼";
                     if (!session.isok)
                     {
                         session.password = error;
@@ -132,11 +132,11 @@ namespace Xpass
             }
             else if(pathRichTextBox.Text == "")
             {
-                MessageBox.Show(this, "ÇëÑ¡ÔñÎÄ¼ş»òÕßÄ¿Â¼£¡", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(this, "è¯·é€‰æ‹©æ–‡ä»¶æˆ–è€…ç›®å½•ï¼", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                MessageBox.Show(this, "Î´ÕÒµ½»á»°ÎÄ¼ş£¡", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(this, "æœªæ‰¾åˆ°ä¼šè¯æ–‡ä»¶ï¼", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             }
         }
