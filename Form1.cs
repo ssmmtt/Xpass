@@ -22,17 +22,7 @@ namespace Xpass
             {
                 pathRichTextBox.Text = path;
                 var paths = path.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-
-                if (paths.Length == 1 && !paths[0].EndsWith(".xsh", StringComparison.OrdinalIgnoreCase))
-                {
-                    // 处理目录情况
-                    selectedFiles = Xclass.GetXshFiles(paths[0]) ?? [];
-                }
-                else
-                {
-                    // 处理文件列表情况
-                    selectedFiles.AddRange(paths);
-                }
+                selectedFiles.AddRange(paths);
             }
 
             if (!string.IsNullOrEmpty(passwd))
@@ -99,7 +89,7 @@ namespace Xpass
                     pathRichTextBox.Clear();
                     selectedFiles.Clear();
                     pathRichTextBox.AppendText(folderBrowserDialog1.SelectedPath);
-                    selectedFiles = Xclass.GetXshFiles(folderBrowserDialog1.SelectedPath);
+                    selectedFiles.Add(folderBrowserDialog1.SelectedPath);
                 }
             }
         }
@@ -141,7 +131,28 @@ namespace Xpass
                     sid = Xclass.GetSid();
                 }
                 dataGridView1.Rows.Clear();
-                foreach (string element in selectedFiles)
+
+                // 处理文件列表
+                List<string> filesToProcess = [];
+                foreach (string path in selectedFiles)
+                {
+                    if (File.Exists(path) && path.EndsWith(".xsh", StringComparison.OrdinalIgnoreCase))
+                    {
+                        filesToProcess.Add(path);
+                    }
+                    else if (Directory.Exists(path))
+                    {
+                        filesToProcess.AddRange(Xclass.GetXshFiles(path) ?? []);
+                    }
+                }
+
+                if (filesToProcess.Count == 0)
+                {
+                    MessageBox.Show(this, "未找到会话文件！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                foreach (string element in filesToProcess)
                 {
                     var session = Xclass.FileParser(element, sid);
                     var error = "确认主密码是否正确！";
@@ -155,7 +166,6 @@ namespace Xpass
                 // 写入配置到注册表
                 RegistryCache.WriteToRegistry(appKey, "path", pathRichTextBox.Text);
                 RegistryCache.WriteToRegistry(appKey, "passwd", masterPasswdTextBox.Text);
-
             }
             else if (pathRichTextBox.Text == "")
             {
@@ -164,7 +174,6 @@ namespace Xpass
             else
             {
                 MessageBox.Show(this, "未找到会话文件！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
             }
         }
 
