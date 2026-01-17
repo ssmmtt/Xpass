@@ -4,7 +4,7 @@ Decrypt Xshell session file password, support xshell 7 8.
 
 解密Xshell会话文件密码，支持xshell 7 8。
 
-![image](https://github.com/user-attachments/assets/970d336e-f1c9-4704-979f-d3b26092539f)
+<img width="670" height="554" alt="image" src="https://github.com/user-attachments/assets/188903b3-ded6-4c88-9fe1-3bf35a9c8379" />
 
 
 ## Stargazers over time
