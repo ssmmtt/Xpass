@@ -1,4 +1,5 @@
-﻿using System.Text;
+using System.Text;
+using System.Linq;
 
 namespace Xpass
 {
@@ -145,6 +146,8 @@ namespace Xpass
                     sid = Xclass.GetSid();
                 }
                 dataGridView1.Rows.Clear();
+                // 清除搜索内容，重置筛选状态
+                searchTextBox.Clear();
 
                 // 处理文件列表
                 List<string> filesToProcess = [];
@@ -233,12 +236,23 @@ namespace Xpass
 
         private void button1_Click(object sender, EventArgs e)
         {
-            // 判断表格是否为空
-            if (dataGridView1.Rows.Count == 0 || (dataGridView1.Rows.Count == 1 && dataGridView1.Rows[0].IsNewRow))
+            // 判断表格是否为空或没有可见的行（适配搜索筛选功能）
+            bool hasVisibleRows = false;
+            foreach (DataGridViewRow row in dataGridView1.Rows)
             {
-                MessageBox.Show("没有会话信息，无法导出！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (!row.IsNewRow && row.Visible)
+                {
+                    hasVisibleRows = true;
+                    break;
+                }
+            }
+
+            if (!hasVisibleRows)
+            {
+                MessageBox.Show("没有可导出的会话信息！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
             SaveFileDialog saveFileDialog = new()
             {
                 Filter = "CSV 文件 (*.csv)|*.csv",
@@ -267,10 +281,10 @@ namespace Xpass
                 }
                 csvContent.AppendLine();
 
-                // 添加数据行
+                // 添加数据行（只导出可见的行，适配搜索筛选功能）
                 foreach (DataGridViewRow row in dgv.Rows)
                 {
-                    if (!row.IsNewRow)
+                    if (!row.IsNewRow && row.Visible)
                     {
                         for (int i = 0; i < dgv.Columns.Count; i++)
                         {
@@ -360,7 +374,76 @@ namespace Xpass
 
         private void searchTextBox_TextChanged(object sender, EventArgs e)
         {
+            string searchText = searchTextBox.Text.Trim();
+            
+            // 如果搜索框为空，显示所有行并清除高亮
+            if (string.IsNullOrEmpty(searchText))
+            {
+                foreach (DataGridViewRow row in dataGridView1.Rows)
+                {
+                    if (!row.IsNewRow)
+                    {
+                        row.Visible = true;
+                        // 清除所有单元格的高亮样式
+                        foreach (DataGridViewCell cell in row.Cells)
+                        {
+                            cell.Style.BackColor = Color.Empty;
+                            cell.Style.ForeColor = Color.Empty;
+                        }
+                    }
+                }
+                return;
+            }
 
+            // 遍历所有行进行筛选
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                if (row.IsNewRow) continue;
+
+                bool isMatch = false;
+                
+                // 检查需要匹配的列：会话名称(0)、主机地址(1)、说明信息(5)
+                int[] searchColumns = { 0, 1, 5 };
+                
+                foreach (int colIndex in searchColumns)
+                {
+                    if (colIndex < row.Cells.Count)
+                    {
+                        string cellValue = row.Cells[colIndex].Value?.ToString() ?? "";
+                        
+                        // 不区分大小写的匹配
+                        if (cellValue.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                        {
+                            isMatch = true;
+                            // 高亮匹配的单元格
+                            row.Cells[colIndex].Style.BackColor = Color.Yellow;
+                            row.Cells[colIndex].Style.ForeColor = Color.Black;
+                        }
+                        else
+                        {
+                            // 清除不匹配单元格的高亮
+                            row.Cells[colIndex].Style.BackColor = Color.Empty;
+                            row.Cells[colIndex].Style.ForeColor = Color.Empty;
+                        }
+                    }
+                }
+                
+                // 显示或隐藏行
+                row.Visible = isMatch;
+                
+                // 如果行不匹配，清除其他列的高亮
+                if (!isMatch)
+                {
+                    for (int i = 0; i < row.Cells.Count; i++)
+                    {
+                        if (!searchColumns.Contains(i))
+                        {
+                            row.Cells[i].Style.BackColor = Color.Empty;
+                            row.Cells[i].Style.ForeColor = Color.Empty;
+                        }
+                    }
+                }
+            }
         }
     }
 }
