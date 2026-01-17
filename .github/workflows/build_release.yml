@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
@@ -29,19 +31,34 @@ jobs:
       - name: Build
         run: ./build.ps1
 
-      - name: Get tag description
-        id: get_tag_description
-        run: |
-          $TAG_NAME=$(git describe --tags --exact-match)
-          $TAG_DESCRIPTION=$(git show $TAG_NAME --no-patch --format='%b' | Select-Object -Skip 3)
-          echo "Tag description: $TAG_DESCRIPTION"
-          echo "tag_description=$TAG_DESCRIPTION" >> $env:GITHUB_OUTPUT
-
       - name: Extract tag name
         id: extract_tag
         run: |
-          $TAG_NAME = ${{ github.ref }}.Replace('refs/tags/', '')
+          $TAG_NAME = "${{ github.ref }}".Replace('refs/tags/', '')
           echo "tag_name=$TAG_NAME" >> $env:GITHUB_OUTPUT
+
+      - name: Get tag description
+        id: get_tag_description
+        run: |
+          $TAG_NAME = "${{ github.ref }}".Replace('refs/tags/', '')
+          # 尝试获取带注释标签的消息
+          $TAG_DESCRIPTION = git tag -l -n9999 $TAG_NAME
+          if ($TAG_DESCRIPTION) {
+            # 移除第一行（标签名），保留其余内容作为描述
+            $LINES = $TAG_DESCRIPTION -split "`n"
+            if ($LINES.Count -gt 1) {
+              $TAG_DESCRIPTION = ($LINES[1..($LINES.Count-1)] -join "`n").Trim()
+            } else {
+              $TAG_DESCRIPTION = "Release $TAG_NAME"
+            }
+          } else {
+            # 如果没有注释，使用默认描述
+            $TAG_DESCRIPTION = "Release $TAG_NAME"
+          }
+          echo "Tag description: $TAG_DESCRIPTION"
+          echo "tag_description<<EOF" >> $env:GITHUB_OUTPUT
+          echo "$TAG_DESCRIPTION" >> $env:GITHUB_OUTPUT
+          echo "EOF" >> $env:GITHUB_OUTPUT
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
