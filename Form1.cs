@@ -350,7 +350,7 @@ namespace Xpass
                 RegistryCache.WriteToRegistry(appKey, "windowHeight", this.Height.ToString());
             }
             RegistryCache.WriteToRegistry(appKey, "windowState", this.WindowState.ToString());
-            
+
             // 调整 DataGridView 列宽以适应窗口大小变化
             if (dataGridView1.Columns.Count > 0)
             {
@@ -358,6 +358,9 @@ namespace Xpass
             }
         }
 
+        private void searchTextBox_TextChanged(object sender, EventArgs e)
+        {
 
+        }
     }
 }

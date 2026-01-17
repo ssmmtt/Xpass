@@ -31,7 +31,6 @@
             components = new System.ComponentModel.Container();
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            masterPasswdLabel = new Label();
             masterPasswdTextBox = new TextBox();
             showPasswdCheckBox = new CheckBox();
             selectFilesButton = new Button();
@@ -50,37 +49,28 @@
             Column6 = new DataGridViewTextBoxColumn();
             Column7 = new DataGridViewTextBoxColumn();
             button1 = new Button();
+            searchTextBox = new TextBox();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
-            // masterPasswdLabel
-            // 
-            masterPasswdLabel.AutoSize = true;
-            masterPasswdLabel.Font = new Font("Microsoft YaHei UI", 9F);
-            masterPasswdLabel.Location = new Point(12, 131);
-            masterPasswdLabel.Name = "masterPasswdLabel";
-            masterPasswdLabel.Size = new Size(56, 17);
-            masterPasswdLabel.TabIndex = 0;
-            masterPasswdLabel.Text = "主密码：";
-            // 
             // masterPasswdTextBox
             // 
-            masterPasswdTextBox.Location = new Point(74, 128);
+            masterPasswdTextBox.Location = new Point(360, 129);
             masterPasswdTextBox.Name = "masterPasswdTextBox";
             masterPasswdTextBox.PasswordChar = '*';
             masterPasswdTextBox.PlaceholderText = "如果设置了主密码请输入";
-            masterPasswdTextBox.Size = new Size(420, 23);
+            masterPasswdTextBox.Size = new Size(164, 23);
             masterPasswdTextBox.TabIndex = 5;
             // 
             // showPasswdCheckBox
             // 
             showPasswdCheckBox.AutoSize = true;
             showPasswdCheckBox.ForeColor = SystemColors.ControlDarkDark;
-            showPasswdCheckBox.Location = new Point(500, 131);
+            showPasswdCheckBox.Location = new Point(530, 131);
             showPasswdCheckBox.Name = "showPasswdCheckBox";
-            showPasswdCheckBox.Size = new Size(75, 21);
+            showPasswdCheckBox.Size = new Size(51, 21);
             showPasswdCheckBox.TabIndex = 2;
-            showPasswdCheckBox.Text = "显示密码";
+            showPasswdCheckBox.Text = "显示";
             showPasswdCheckBox.UseVisualStyleBackColor = true;
             showPasswdCheckBox.CheckedChanged += showPasswdCheckBox_CheckedChanged;
             // 
@@ -225,11 +215,21 @@
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
+            // searchTextBox
+            // 
+            searchTextBox.Location = new Point(12, 129);
+            searchTextBox.Name = "searchTextBox";
+            searchTextBox.PlaceholderText = "搜索";
+            searchTextBox.Size = new Size(305, 23);
+            searchTextBox.TabIndex = 9;
+            searchTextBox.TextChanged += searchTextBox_TextChanged;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(684, 561);
+            Controls.Add(searchTextBox);
             Controls.Add(button1);
             Controls.Add(dataGridView1);
             Controls.Add(pathRichTextBox);
@@ -238,7 +238,6 @@
             Controls.Add(selectFilesButton);
             Controls.Add(showPasswdCheckBox);
             Controls.Add(masterPasswdTextBox);
-            Controls.Add(masterPasswdLabel);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MinimumSize = new Size(684, 561);
             Name = "Form1";
@@ -250,8 +249,6 @@
         }
 
         #endregion
-
-        private Label masterPasswdLabel;
         private TextBox masterPasswdTextBox;
         private CheckBox showPasswdCheckBox;
         private Button selectFilesButton;
@@ -270,5 +267,6 @@
         private DataGridViewTextBoxColumn Column6;
         private DataGridViewTextBoxColumn Column7;
         private Button button1;
+        private TextBox searchTextBox;
     }
 }
