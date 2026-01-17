@@ -11,8 +11,7 @@ Write-Host 'Building'
 $publishArgs = @(
     '.\Xpass.csproj',
     '-c', 'Release',
-    '--self-contained', 'false',
-    '-p:PublishReadyToRun=true',
+    '-p:PublishSelfContained=false',
     '-p:PublishSingleFile=true',
     '-r', 'win-x86',
     '-o', $OutputPath
@@ -38,8 +37,7 @@ if (Test-Path -Path "$OutputPath\Xpass.exe") {
 $publishArgs = @(
     '.\Xpass.csproj',
     '-c', 'Release',
-    '--self-contained', 'false',
-    '-p:PublishReadyToRun=true',
+    '-p:PublishSelfContained=false',
     '-p:PublishSingleFile=true',
     '-r', 'win-x64',
     '-o', $OutputPath
