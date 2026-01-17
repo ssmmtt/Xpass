@@ -42,11 +42,13 @@
             openFileDialog1 = new OpenFileDialog();
             folderBrowserDialog1 = new FolderBrowserDialog();
             dataGridView1 = new DataGridView();
+            Column1 = new DataGridViewTextBoxColumn();
             Column2 = new DataGridViewTextBoxColumn();
             Column3 = new DataGridViewTextBoxColumn();
             Column4 = new DataGridViewTextBoxColumn();
             Column5 = new DataGridViewTextBoxColumn();
             Column6 = new DataGridViewTextBoxColumn();
+            Column7 = new DataGridViewTextBoxColumn();
             button1 = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
@@ -54,7 +56,7 @@
             // masterPasswdLabel
             // 
             masterPasswdLabel.AutoSize = true;
-            masterPasswdLabel.Font = new Font("Microsoft YaHei UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            masterPasswdLabel.Font = new Font("Microsoft YaHei UI", 9F);
             masterPasswdLabel.Location = new Point(12, 131);
             masterPasswdLabel.Name = "masterPasswdLabel";
             masterPasswdLabel.Size = new Size(56, 17);
@@ -84,7 +86,7 @@
             // 
             // selectFilesButton
             // 
-            selectFilesButton.Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            selectFilesButton.Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Bold);
             selectFilesButton.ForeColor = Color.DodgerBlue;
             selectFilesButton.Location = new Point(12, 11);
             selectFilesButton.Name = "selectFilesButton";
@@ -96,7 +98,7 @@
             // 
             // selectDirButton
             // 
-            selectDirButton.Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            selectDirButton.Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Bold);
             selectDirButton.ForeColor = Color.DodgerBlue;
             selectDirButton.Location = new Point(12, 67);
             selectDirButton.Name = "selectDirButton";
@@ -108,8 +110,9 @@
             // 
             // decryptButton
             // 
+            decryptButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             decryptButton.BackColor = Color.DeepSkyBlue;
-            decryptButton.Font = new Font("Microsoft YaHei UI", 24F, FontStyle.Bold, GraphicsUnit.Point);
+            decryptButton.Font = new Font("Microsoft YaHei UI", 24F, FontStyle.Bold);
             decryptButton.Location = new Point(566, 12);
             decryptButton.Name = "decryptButton";
             decryptButton.Size = new Size(106, 106);
@@ -120,6 +123,7 @@
             // 
             // pathRichTextBox
             // 
+            pathRichTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             pathRichTextBox.Location = new Point(93, 12);
             pathRichTextBox.Name = "pathRichTextBox";
             pathRichTextBox.ReadOnly = true;
@@ -144,11 +148,12 @@
             dataGridView1.AllowUserToDeleteRows = false;
             dataGridView1.AllowUserToOrderColumns = true;
             dataGridView1.AllowUserToResizeRows = false;
+            dataGridView1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dataGridView1.BackgroundColor = Color.White;
             dataGridView1.BorderStyle = BorderStyle.Fixed3D;
             dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = SystemColors.Control;
-            dataGridViewCellStyle1.Font = new Font("Microsoft YaHei UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            dataGridViewCellStyle1.Font = new Font("Microsoft YaHei UI", 9F, FontStyle.Bold);
             dataGridViewCellStyle1.ForeColor = SystemColors.WindowText;
             dataGridViewCellStyle1.Padding = new Padding(0, 5, 0, 5);
             dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
@@ -156,50 +161,62 @@
             dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
             dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Columns.AddRange(new DataGridViewColumn[] { Column2, Column3, Column4, Column5, Column6 });
+            dataGridView1.Columns.AddRange(new DataGridViewColumn[] { Column1, Column2, Column3, Column4, Column5, Column6, Column7 });
             dataGridView1.Location = new Point(12, 161);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.ReadOnly = true;
             dataGridView1.RowHeadersWidth = 30;
             dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            dataGridView1.RowTemplate.Height = 25;
             dataGridView1.Size = new Size(660, 388);
             dataGridView1.TabIndex = 7;
             dataGridView1.RowPostPaint += dataGridView1_RowPostPaint;
             // 
+            // Column1
+            // 
+            Column1.HeaderText = "会话名称";
+            Column1.Name = "Column1";
+            Column1.ReadOnly = true;
+            // 
             // Column2
             // 
-            Column2.HeaderText = "会话路径";
+            Column2.HeaderText = "主机地址";
             Column2.Name = "Column2";
             Column2.ReadOnly = true;
             // 
             // Column3
             // 
-            Column3.HeaderText = "主机地址";
+            Column3.HeaderText = "端口";
             Column3.Name = "Column3";
             Column3.ReadOnly = true;
             // 
             // Column4
             // 
-            Column4.HeaderText = "端口";
+            Column4.HeaderText = "用户名";
             Column4.Name = "Column4";
             Column4.ReadOnly = true;
             // 
             // Column5
             // 
-            Column5.HeaderText = "用户名";
+            Column5.HeaderText = "密码";
             Column5.Name = "Column5";
             Column5.ReadOnly = true;
             // 
             // Column6
             // 
-            Column6.HeaderText = "密码";
+            Column6.HeaderText = "说明信息";
             Column6.Name = "Column6";
             Column6.ReadOnly = true;
             // 
+            // Column7
+            // 
+            Column7.HeaderText = "会话路径";
+            Column7.Name = "Column7";
+            Column7.ReadOnly = true;
+            // 
             // button1
             // 
-            button1.Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            button1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            button1.Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Bold);
             button1.Location = new Point(600, 123);
             button1.Name = "button1";
             button1.Size = new Size(72, 32);
@@ -222,9 +239,8 @@
             Controls.Add(showPasswdCheckBox);
             Controls.Add(masterPasswdTextBox);
             Controls.Add(masterPasswdLabel);
-            FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = (Icon)resources.GetObject("$this.Icon");
-            MaximizeBox = false;
+            MinimumSize = new Size(684, 561);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Xpass";
@@ -246,11 +262,13 @@
         private OpenFileDialog openFileDialog1;
         private FolderBrowserDialog folderBrowserDialog1;
         private DataGridView dataGridView1;
+        private DataGridViewTextBoxColumn Column1;
         private DataGridViewTextBoxColumn Column2;
         private DataGridViewTextBoxColumn Column3;
         private DataGridViewTextBoxColumn Column4;
         private DataGridViewTextBoxColumn Column5;
         private DataGridViewTextBoxColumn Column6;
+        private DataGridViewTextBoxColumn Column7;
         private Button button1;
     }
 }

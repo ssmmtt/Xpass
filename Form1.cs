@@ -9,8 +9,16 @@ namespace Xpass
         public Form1()
         {
             InitializeComponent();
-            ImproveDataGridView();
             LoadLastConfig();
+            LoadWindowSize();
+            this.Resize += Form1_Resize;
+            this.Shown += Form1_Shown;
+        }
+
+        private void Form1_Shown(object? sender, EventArgs e)
+        {
+            // 窗口完全显示后再调整列宽，确保 DataGridView 大小已确定
+            ImproveDataGridView();
         }
 
         private void LoadLastConfig()
@@ -39,8 +47,8 @@ namespace Xpass
             dataGridView1.RowsDefaultCellStyle.BackColor = Color.White;
             dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
 
-            // 百分比
-            double[] columnPercentages = [35, 18, 8, 12, 26];
+            // 百分比：会话名称、主机地址、端口、用户名、密码、说明信息、会话路径
+            double[] columnPercentages = [17, 17, 7, 9, 16, 13, 21];
             int totalWidth = dataGridView1.Width - dataGridView1.RowHeadersWidth;
             // 分配列宽
             for (int i = 0; i < dataGridView1.Columns.Count; i++)
@@ -48,7 +56,13 @@ namespace Xpass
                 dataGridView1.Columns[i].HeaderCell.Style.WrapMode = DataGridViewTriState.False;
                 if (i == dataGridView1.Columns.Count - 1)
                 {
-                    dataGridView1.Columns[i].Width = totalWidth - (dataGridView1.Columns[0].Width + dataGridView1.Columns[1].Width + dataGridView1.Columns[2].Width + dataGridView1.Columns[3].Width);
+                    // 最后一列使用剩余空间
+                    int usedWidth = 0;
+                    for (int j = 0; j < dataGridView1.Columns.Count - 1; j++)
+                    {
+                        usedWidth += dataGridView1.Columns[j].Width;
+                    }
+                    dataGridView1.Columns[i].Width = totalWidth - usedWidth;
                     break;
                 }
                 int newWidth = (int)(totalWidth * columnPercentages[i] / 100);
@@ -161,7 +175,10 @@ namespace Xpass
                         session.password = error;
                     }
 
-                    AddRowToDataGridView([element, session.host, session.port, session.userName, session.password]);
+                    // 获取文件名（去掉扩展名）作为会话名称
+                    string sessionName = Path.GetFileNameWithoutExtension(element);
+                    // 列顺序：会话名称、主机地址、端口、用户名、密码、说明信息、会话路径
+                    AddRowToDataGridView([sessionName, session.host, session.port, session.userName, session.password, session.description ?? "", element]);
                 }
                 // 写入配置到注册表
                 RegistryCache.WriteToRegistry(appKey, "path", pathRichTextBox.Text);
@@ -291,6 +308,54 @@ namespace Xpass
             }
 
             return field;
+        }
+
+        private void LoadWindowSize()
+        {
+            var widthStr = RegistryCache.ReadFromRegistry(appKey, "windowWidth");
+            var heightStr = RegistryCache.ReadFromRegistry(appKey, "windowHeight");
+            var windowStateStr = RegistryCache.ReadFromRegistry(appKey, "windowState");
+
+            if (!string.IsNullOrEmpty(widthStr) && int.TryParse(widthStr, out int width) &&
+                !string.IsNullOrEmpty(heightStr) && int.TryParse(heightStr, out int height))
+            {
+                // 确保窗口大小不小于最小尺寸
+                if (width >= this.MinimumSize.Width && height >= this.MinimumSize.Height)
+                {
+                    this.Size = new Size(width, height);
+                }
+            }
+            else
+            {
+                // 如果没有保存的尺寸，使用最小窗口大小
+                this.Size = this.MinimumSize;
+            }
+
+            // 恢复窗口状态
+            if (!string.IsNullOrEmpty(windowStateStr) && Enum.TryParse<FormWindowState>(windowStateStr, out var windowState))
+            {
+                if (windowState == FormWindowState.Maximized)
+                {
+                    this.WindowState = FormWindowState.Maximized;
+                }
+            }
+        }
+
+        private void Form1_Resize(object? sender, EventArgs e)
+        {
+            // 只有在窗口状态为 Normal 时才保存大小
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                RegistryCache.WriteToRegistry(appKey, "windowWidth", this.Width.ToString());
+                RegistryCache.WriteToRegistry(appKey, "windowHeight", this.Height.ToString());
+            }
+            RegistryCache.WriteToRegistry(appKey, "windowState", this.WindowState.ToString());
+            
+            // 调整 DataGridView 列宽以适应窗口大小变化
+            if (dataGridView1.Columns.Count > 0)
+            {
+                ImproveDataGridView();
+            }
         }
 
 

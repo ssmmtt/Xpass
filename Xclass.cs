@@ -10,6 +10,7 @@ namespace Xpass
         public string password;
         public string encryptPw;
         public string port;
+        public string description;
         public bool isok;
     }
 
@@ -56,6 +57,10 @@ namespace Xpass
                     else if (System.Text.RegularExpressions.Regex.IsMatch(line, @"UserName=(.*?)"))
                     {
                         xsh.userName = line.Replace("UserName=", "");
+                    }
+                    else if (System.Text.RegularExpressions.Regex.IsMatch(line, @"Description=(.*?)"))
+                    {
+                        xsh.description = line.Replace("Description=", "");
                     }
                 }
             }
