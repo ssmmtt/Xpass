@@ -35,38 +35,22 @@ jobs:
           $TAG_NAME=$(git describe --tags --exact-match)
           $TAG_DESCRIPTION=$(git show $TAG_NAME --no-patch --format='%b' | Select-Object -Skip 3)
           echo "Tag description: $TAG_DESCRIPTION"
-          echo "::set-output name=tag_description::$TAG_DESCRIPTION"
+          echo "tag_description=$TAG_DESCRIPTION" >> $env:GITHUB_OUTPUT
+
+      - name: Extract tag name
+        id: extract_tag
+        run: |
+          $TAG_NAME = ${{ github.ref }}.Replace('refs/tags/', '')
+          echo "tag_name=$TAG_NAME" >> $env:GITHUB_OUTPUT
 
       - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ steps.extract_tag.outputs.tag_name }}
+          name: Release ${{ steps.extract_tag.outputs.tag_name }}
+          body: ${{ steps.get_tag_description.outputs.tag_description }}
           draft: false
           prerelease: false
-          body: ${{ steps.get_tag_description.outputs.tag_description }}
-
-      - name: Upload Release x86
-        id: upload-release-x86
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./bin/Xpass/Xpass_x86.exe
-          asset_name: Xpass_x86.exe
-          asset_content_type: application/octet-stream
-
-      - name: Upload Release x64
-        id: upload-release-x64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./bin/Xpass/Xpass_x64.exe
-          asset_name: Xpass_x64.exe
-          asset_content_type: application/octet-stream
+          files: |
+            ./bin/Xpass/Xpass_x86.exe
+            ./bin/Xpass/Xpass_x64.exe
