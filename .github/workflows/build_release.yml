@@ -65,7 +65,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.extract_tag.outputs.tag_name }}
-          name: Release ${{ steps.extract_tag.outputs.tag_name }}
+          name: ${{ steps.extract_tag.outputs.tag_name }}
           body: ${{ steps.get_tag_description.outputs.tag_description }}
           draft: false
           prerelease: false
