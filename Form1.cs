@@ -7,6 +7,7 @@ namespace Xpass
     {
         readonly string appKey = "Software\\Xpass";
         private List<string> selectedFiles = [];
+        private bool hasTriedAutoDecrypt;
         public Form1()
         {
             InitializeComponent();
@@ -20,6 +21,14 @@ namespace Xpass
         {
             // 窗口完全显示后再调整列宽，确保 DataGridView 大小已确定
             ImproveDataGridView();
+            if (!hasTriedAutoDecrypt)
+            {
+                hasTriedAutoDecrypt = true;
+                if (HasValidSelectedInput())
+                {
+                    RunDecrypt(false);
+                }
+            }
         }
 
         private void LoadLastConfig()
@@ -132,7 +141,32 @@ namespace Xpass
             dataGridView1.Rows.Add(row);
         }
 
-        private void DecryptButton_Click(object sender, EventArgs e)
+        private bool HasValidSelectedInput()
+        {
+            return selectedFiles.Any(path =>
+                (File.Exists(path) && path.EndsWith(".xsh", StringComparison.OrdinalIgnoreCase)) ||
+                Directory.Exists(path));
+        }
+
+        private static List<string> BuildFilesToProcess(IEnumerable<string> paths)
+        {
+            List<string> filesToProcess = [];
+            foreach (string path in paths)
+            {
+                if (File.Exists(path) && path.EndsWith(".xsh", StringComparison.OrdinalIgnoreCase))
+                {
+                    filesToProcess.Add(path);
+                }
+                else if (Directory.Exists(path))
+                {
+                    filesToProcess.AddRange(Xclass.GetXshFiles(path) ?? []);
+                }
+            }
+
+            return filesToProcess;
+        }
+
+        private void RunDecrypt(bool showMessage)
         {
             if (selectedFiles.Count > 0)
             {
@@ -150,22 +184,14 @@ namespace Xpass
                 searchTextBox.Clear();
 
                 // 处理文件列表
-                List<string> filesToProcess = [];
-                foreach (string path in selectedFiles)
-                {
-                    if (File.Exists(path) && path.EndsWith(".xsh", StringComparison.OrdinalIgnoreCase))
-                    {
-                        filesToProcess.Add(path);
-                    }
-                    else if (Directory.Exists(path))
-                    {
-                        filesToProcess.AddRange(Xclass.GetXshFiles(path) ?? []);
-                    }
-                }
+                List<string> filesToProcess = BuildFilesToProcess(selectedFiles);
 
                 if (filesToProcess.Count == 0)
                 {
-                    MessageBox.Show(this, "未找到会话文件！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (showMessage)
+                    {
+                        MessageBox.Show(this, "未找到会话文件！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                     return;
                 }
 
@@ -187,14 +213,19 @@ namespace Xpass
                 RegistryCache.WriteToRegistry(appKey, "path", pathRichTextBox.Text);
                 RegistryCache.WriteToRegistry(appKey, "passwd", masterPasswdTextBox.Text);
             }
-            else if (pathRichTextBox.Text == "")
+            else if (pathRichTextBox.Text == "" && showMessage)
             {
                 MessageBox.Show(this, "请选择文件或者目录！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            else
+            else if (showMessage)
             {
                 MessageBox.Show(this, "未找到会话文件！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+        }
+
+        private void DecryptButton_Click(object sender, EventArgs e)
+        {
+            RunDecrypt(true);
         }
 
         private void showPasswdCheckBox_CheckedChanged(object sender, EventArgs e)
