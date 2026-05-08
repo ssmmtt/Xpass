@@ -28,7 +28,9 @@ if (-Not $?) {
 # 重命名输出文件并移除不必要的文件
 if (Test-Path -Path "$OutputPath\Xpass.exe") {
     mv -Path "$OutputPath\Xpass.exe" -Destination "$OutputPath\Xpass_x86.exe" -Force
-    Get-ChildItem -Path "$OutputPath" -Exclude "Xpass_x86.exe" | Remove-Item -Force
+    Get-ChildItem -Path "$OutputPath" -File | Where-Object { $_.Name -ne 'Xpass_x86.exe' } | ForEach-Object {
+        Remove-Item -LiteralPath $_.FullName -Force
+    }
     $x86Size = (Get-Item "$OutputPath\Xpass_x86.exe").Length / 1MB
     Write-Host "x86 build completed. File size: $([math]::Round($x86Size, 2)) MB"
 }
@@ -54,7 +56,9 @@ if (-Not $?) {
 # 重命名输出文件并移除不必要的文件
 if (Test-Path -Path "$OutputPath\Xpass.exe") {
     mv -Path "$OutputPath\Xpass.exe" -Destination "$OutputPath\Xpass_x64.exe" -Force
-    Get-ChildItem -Path "$OutputPath" -Exclude "Xpass_x64.exe","Xpass_x86.exe" | Remove-Item -Force
+    Get-ChildItem -Path "$OutputPath" -File | Where-Object { $_.Name -notin @('Xpass_x64.exe', 'Xpass_x86.exe') } | ForEach-Object {
+        Remove-Item -LiteralPath $_.FullName -Force
+    }
     $x64Size = (Get-Item "$OutputPath\Xpass_x64.exe").Length / 1MB
     Write-Host "x64 build completed. File size: $([math]::Round($x64Size, 2)) MB"
 }
