@@ -14,7 +14,6 @@ namespace Xpass
         {
             InitializeComponent();
             EnableDataGridViewDoubleBuffered(dataGridView1);
-            LoadGithubIcon();
             LoadLastConfig();
             LoadWindowSize();
             this.Resize += Form1_Resize;
@@ -49,21 +48,6 @@ namespace Xpass
             string sample = count.ToString();
             Size sz = TextRenderer.MeasureText(sample, dataGridView1.Font);
             dataGridView1.RowHeadersWidth = Math.Max(30, sz.Width + 14);
-        }
-
-        private void LoadGithubIcon()
-        {
-            try
-            {
-                var path = Path.Combine(AppContext.BaseDirectory, "Resources", "github.ico");
-                if (!File.Exists(path)) return;
-                githubLinkPictureBox.Image?.Dispose();
-                githubLinkPictureBox.Image = Image.FromFile(path);
-            }
-            catch
-            {
-                // 设计时或文件缺失时忽略
-            }
         }
 
         private void githubLinkPictureBox_Click(object? sender, EventArgs e)

@@ -16,10 +16,4 @@
 		<Version>2.2.0</Version>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<Content Include="Resources\github.ico">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-
 </Project>

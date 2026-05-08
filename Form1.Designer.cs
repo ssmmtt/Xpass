@@ -206,19 +206,6 @@ namespace Xpass
             Column7.Name = "Column7";
             Column7.ReadOnly = true;
             // 
-            // githubLinkPictureBox
-            // 
-            githubLinkPictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            githubLinkPictureBox.Cursor = Cursors.Hand;
-            githubLinkPictureBox.Location = new Point(597, 122);
-            githubLinkPictureBox.Name = "githubLinkPictureBox";
-            githubLinkPictureBox.Size = new Size(22, 22);
-            githubLinkPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-            githubLinkPictureBox.TabIndex = 10;
-            githubLinkPictureBox.TabStop = false;
-            githubLinkPictureBox.Click += githubLinkPictureBox_Click;
-            toolTip1.SetToolTip(githubLinkPictureBox, "项目主页");
-            // 
             // button1
             // 
             button1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -239,6 +226,20 @@ namespace Xpass
             searchTextBox.Size = new Size(310, 23);
             searchTextBox.TabIndex = 9;
             searchTextBox.TextChanged += searchTextBox_TextChanged;
+            // 
+            // githubLinkPictureBox
+            // 
+            githubLinkPictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            githubLinkPictureBox.Cursor = Cursors.Hand;
+            githubLinkPictureBox.Image = Properties.Resources.github;
+            githubLinkPictureBox.Location = new Point(597, 122);
+            githubLinkPictureBox.Name = "githubLinkPictureBox";
+            githubLinkPictureBox.Size = new Size(22, 22);
+            githubLinkPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            githubLinkPictureBox.TabIndex = 10;
+            githubLinkPictureBox.TabStop = false;
+            toolTip1.SetToolTip(githubLinkPictureBox, "项目主页");
+            githubLinkPictureBox.Click += githubLinkPictureBox_Click;
             // 
             // Form1
             // 
