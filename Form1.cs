@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Reflection;
 using System.Text;
 using System.Linq;
 
@@ -11,10 +13,73 @@ namespace Xpass
         public Form1()
         {
             InitializeComponent();
+            EnableDataGridViewDoubleBuffered(dataGridView1);
+            LoadGithubIcon();
             LoadLastConfig();
             LoadWindowSize();
             this.Resize += Form1_Resize;
             this.Shown += Form1_Shown;
+        }
+
+        /// <summary>
+        /// DataGridView 未公开 DoubleBuffered，开启后可减轻滚动时闪烁与撕裂。
+        /// </summary>
+        private static void EnableDataGridViewDoubleBuffered(DataGridView dgv)
+        {
+            typeof(Control).InvokeMember(
+                "DoubleBuffered",
+                BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty,
+                null,
+                dgv,
+                [true]);
+        }
+
+        /// <summary>
+        /// 根据当前行数一次性设置行头宽度，避免在 RowPostPaint 里改宽度导致滚动时反复布局。
+        /// </summary>
+        private void SyncDataGridRowHeadersWidth()
+        {
+            int count = dataGridView1.Rows.Count;
+            if (count == 0)
+            {
+                dataGridView1.RowHeadersWidth = 30;
+                return;
+            }
+
+            string sample = count.ToString();
+            Size sz = TextRenderer.MeasureText(sample, dataGridView1.Font);
+            dataGridView1.RowHeadersWidth = Math.Max(30, sz.Width + 14);
+        }
+
+        private void LoadGithubIcon()
+        {
+            try
+            {
+                var path = Path.Combine(AppContext.BaseDirectory, "Resources", "github.ico");
+                if (!File.Exists(path)) return;
+                githubLinkPictureBox.Image?.Dispose();
+                githubLinkPictureBox.Image = Image.FromFile(path);
+            }
+            catch
+            {
+                // 设计时或文件缺失时忽略
+            }
+        }
+
+        private void githubLinkPictureBox_Click(object? sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "https://github.com/ssmmtt/Xpass",
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, "无法打开链接: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void Form1_Shown(object? sender, EventArgs e)
@@ -50,6 +115,43 @@ namespace Xpass
         }
 
 
+        /// <summary>
+        /// 列区域可用宽度：应用客户区宽度，减去行头与纵向滚动条（未计入时列总宽会略大于可视区，导致始终出现横向滚动条）。
+        /// </summary>
+        private int GetDataGridViewAvailableColumnsWidth()
+        {
+            int inner = dataGridView1.ClientSize.Width - dataGridView1.RowHeadersWidth;
+
+            bool reservedVerticalScroll = false;
+            foreach (Control c in dataGridView1.Controls)
+            {
+                if (c is VScrollBar vsb)
+                {
+                    if (vsb.Visible)
+                    {
+                        inner -= vsb.Width;
+                        reservedVerticalScroll = true;
+                    }
+                    break;
+                }
+            }
+
+            // 布局尚未完成时竖条可能尚未 Visible，但行数已超出可视行时仍应预留，避免 Improve 与真实布局不一致
+            if (!reservedVerticalScroll && dataGridView1.Rows.Count > 0)
+            {
+                int headerH = dataGridView1.ColumnHeadersVisible ? dataGridView1.ColumnHeadersHeight : 0;
+                int rowH = dataGridView1.RowTemplate.Height > 0 ? dataGridView1.RowTemplate.Height : 22;
+                int bodyH = Math.Max(0, dataGridView1.ClientSize.Height - headerH);
+                int approxVisibleRows = bodyH / Math.Max(1, rowH);
+                if (approxVisibleRows > 0 && dataGridView1.Rows.Count > approxVisibleRows)
+                    inner -= SystemInformation.VerticalScrollBarWidth;
+            }
+
+            // 高 DPI / 3D 边框 / 网格线绘制与理论客户区偶有 1～2px 偏差，略减可避免仍出现横向微滚动
+            const int layoutFudgePx = 2;
+            return Math.Max(1, inner - layoutFudgePx);
+        }
+
         private void ImproveDataGridView()
         {
 
@@ -59,7 +161,7 @@ namespace Xpass
 
             // 百分比：会话名称、主机地址、端口、用户名、密码、说明信息、会话路径
             double[] columnPercentages = [17, 17, 7, 9, 16, 13, 21];
-            int totalWidth = dataGridView1.Width - dataGridView1.RowHeadersWidth;
+            int totalWidth = GetDataGridViewAvailableColumnsWidth();
             // 分配列宽
             for (int i = 0; i < dataGridView1.Columns.Count; i++)
             {
@@ -192,6 +294,8 @@ namespace Xpass
                     {
                         MessageBox.Show(this, "未找到会话文件！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
+                    SyncDataGridRowHeadersWidth();
+                    ImproveDataGridView();
                     return;
                 }
 
@@ -209,6 +313,8 @@ namespace Xpass
                     // 列顺序：会话名称、主机地址、端口、用户名、密码、说明信息、会话路径
                     AddRowToDataGridView([sessionName, session.host, session.port, session.userName, session.password, session.description ?? "", element]);
                 }
+                SyncDataGridRowHeadersWidth();
+                ImproveDataGridView();
                 // 写入配置到注册表
                 RegistryCache.WriteToRegistry(appKey, "path", pathRichTextBox.Text);
                 RegistryCache.WriteToRegistry(appKey, "passwd", masterPasswdTextBox.Text);
@@ -242,27 +348,24 @@ namespace Xpass
 
         private void dataGridView1_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
         {
-            using SolidBrush brush = new(dataGridView1.RowHeadersDefaultCellStyle.ForeColor);
-            // 计算行号（e.RowIndex 从 0 开始，所以要 +1）
-            string rowIndex = (e.RowIndex + 1).ToString();
+            if (e.RowIndex < 0)
+                return;
 
-            // 获取行头的绘制区域
-            SizeF size = e.Graphics.MeasureString(rowIndex, dataGridView1.Font);
-
-            // 计算绘制位置，使文本居中对齐
-            float x = e.RowBounds.Left + (dataGridView1.RowHeadersWidth - size.Width) / 2;
-            float y = e.RowBounds.Top + (e.RowBounds.Height - size.Height) / 2;
-
-            // 绘制行号
-            e.Graphics.DrawString(rowIndex, dataGridView1.Font, brush, x, y);
-
-            // 根据行号宽度动态调整 RowHeadersWidth
-            int newWidth = (int)size.Width + 10; // 加一些额外空间，防止文本贴边
-            if (newWidth > dataGridView1.RowHeadersWidth)
-            {
-                dataGridView1.RowHeadersWidth = newWidth;
-            }
-
+            // 行头宽度在 SyncDataGridRowHeadersWidth 中统一更新；此处仅用 TextRenderer 绘制，避免 MeasureString 与绘制期间改布局导致滚动卡顿。
+            string rowLabel = (e.RowIndex + 1).ToString();
+            var headerRect = new Rectangle(
+                e.RowBounds.Left,
+                e.RowBounds.Top,
+                dataGridView1.RowHeadersWidth,
+                e.RowBounds.Height);
+            Color fore = dataGridView1.RowHeadersDefaultCellStyle.ForeColor;
+            TextRenderer.DrawText(
+                e.Graphics,
+                rowLabel,
+                dataGridView1.Font,
+                headerRect,
+                fore,
+                TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.NoPadding);
         }
 
         private void button1_Click(object sender, EventArgs e)

@@ -1,4 +1,4 @@
-﻿namespace Xpass
+namespace Xpass
 {
     partial class Form1
     {
@@ -50,12 +50,15 @@
             Column7 = new DataGridViewTextBoxColumn();
             button1 = new Button();
             searchTextBox = new TextBox();
+            toolTip1 = new ToolTip(components);
+            githubLinkPictureBox = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)githubLinkPictureBox).BeginInit();
             SuspendLayout();
             // 
             // masterPasswdTextBox
             // 
-            masterPasswdTextBox.Location = new Point(360, 129);
+            masterPasswdTextBox.Location = new Point(323, 122);
             masterPasswdTextBox.Name = "masterPasswdTextBox";
             masterPasswdTextBox.PasswordChar = '*';
             masterPasswdTextBox.PlaceholderText = "如果设置了主密码请输入";
@@ -66,7 +69,7 @@
             // 
             showPasswdCheckBox.AutoSize = true;
             showPasswdCheckBox.ForeColor = SystemColors.ControlDarkDark;
-            showPasswdCheckBox.Location = new Point(530, 131);
+            showPasswdCheckBox.Location = new Point(493, 123);
             showPasswdCheckBox.Name = "showPasswdCheckBox";
             showPasswdCheckBox.Size = new Size(51, 21);
             showPasswdCheckBox.TabIndex = 2;
@@ -78,7 +81,7 @@
             // 
             selectFilesButton.Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Bold);
             selectFilesButton.ForeColor = Color.DodgerBlue;
-            selectFilesButton.Location = new Point(12, 11);
+            selectFilesButton.Location = new Point(5, 5);
             selectFilesButton.Name = "selectFilesButton";
             selectFilesButton.Size = new Size(75, 50);
             selectFilesButton.TabIndex = 3;
@@ -90,7 +93,7 @@
             // 
             selectDirButton.Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Bold);
             selectDirButton.ForeColor = Color.DodgerBlue;
-            selectDirButton.Location = new Point(12, 67);
+            selectDirButton.Location = new Point(5, 61);
             selectDirButton.Name = "selectDirButton";
             selectDirButton.Size = new Size(75, 50);
             selectDirButton.TabIndex = 4;
@@ -103,7 +106,7 @@
             decryptButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             decryptButton.BackColor = Color.DeepSkyBlue;
             decryptButton.Font = new Font("Microsoft YaHei UI", 24F, FontStyle.Bold);
-            decryptButton.Location = new Point(566, 12);
+            decryptButton.Location = new Point(593, 5);
             decryptButton.Name = "decryptButton";
             decryptButton.Size = new Size(106, 106);
             decryptButton.TabIndex = 5;
@@ -114,10 +117,10 @@
             // pathRichTextBox
             // 
             pathRichTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            pathRichTextBox.Location = new Point(93, 12);
+            pathRichTextBox.Location = new Point(86, 5);
             pathRichTextBox.Name = "pathRichTextBox";
             pathRichTextBox.ReadOnly = true;
-            pathRichTextBox.Size = new Size(467, 105);
+            pathRichTextBox.Size = new Size(499, 105);
             pathRichTextBox.TabIndex = 6;
             pathRichTextBox.Text = "";
             // 
@@ -152,12 +155,12 @@
             dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView1.Columns.AddRange(new DataGridViewColumn[] { Column1, Column2, Column3, Column4, Column5, Column6, Column7 });
-            dataGridView1.Location = new Point(12, 161);
+            dataGridView1.Location = new Point(5, 156);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.ReadOnly = true;
             dataGridView1.RowHeadersWidth = 30;
             dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            dataGridView1.Size = new Size(660, 388);
+            dataGridView1.Size = new Size(694, 415);
             dataGridView1.TabIndex = 7;
             dataGridView1.RowPostPaint += dataGridView1_RowPostPaint;
             // 
@@ -203,11 +206,24 @@
             Column7.Name = "Column7";
             Column7.ReadOnly = true;
             // 
+            // githubLinkPictureBox
+            // 
+            githubLinkPictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            githubLinkPictureBox.Cursor = Cursors.Hand;
+            githubLinkPictureBox.Location = new Point(597, 122);
+            githubLinkPictureBox.Name = "githubLinkPictureBox";
+            githubLinkPictureBox.Size = new Size(22, 22);
+            githubLinkPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            githubLinkPictureBox.TabIndex = 10;
+            githubLinkPictureBox.TabStop = false;
+            githubLinkPictureBox.Click += githubLinkPictureBox_Click;
+            toolTip1.SetToolTip(githubLinkPictureBox, "项目主页");
+            // 
             // button1
             // 
             button1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             button1.Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Bold);
-            button1.Location = new Point(600, 123);
+            button1.Location = new Point(627, 117);
             button1.Name = "button1";
             button1.Size = new Size(72, 32);
             button1.TabIndex = 8;
@@ -217,10 +233,10 @@
             // 
             // searchTextBox
             // 
-            searchTextBox.Location = new Point(12, 129);
+            searchTextBox.Location = new Point(5, 122);
             searchTextBox.Name = "searchTextBox";
             searchTextBox.PlaceholderText = "搜索";
-            searchTextBox.Size = new Size(305, 23);
+            searchTextBox.Size = new Size(310, 23);
             searchTextBox.TabIndex = 9;
             searchTextBox.TextChanged += searchTextBox_TextChanged;
             // 
@@ -228,8 +244,9 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(684, 561);
+            ClientSize = new Size(704, 576);
             Controls.Add(searchTextBox);
+            Controls.Add(githubLinkPictureBox);
             Controls.Add(button1);
             Controls.Add(dataGridView1);
             Controls.Add(pathRichTextBox);
@@ -239,11 +256,12 @@
             Controls.Add(showPasswdCheckBox);
             Controls.Add(masterPasswdTextBox);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            MinimumSize = new Size(684, 561);
+            MinimumSize = new Size(704, 576);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Xpass";
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)githubLinkPictureBox).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -268,5 +286,7 @@
         private DataGridViewTextBoxColumn Column7;
         private Button button1;
         private TextBox searchTextBox;
+        private ToolTip toolTip1;
+        private PictureBox githubLinkPictureBox;
     }
 }
