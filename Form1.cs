@@ -13,6 +13,7 @@ namespace Xpass
         public Form1()
         {
             InitializeComponent();
+            Text = $"Xpass - V{Application.ProductVersion}";
             EnableDataGridViewDoubleBuffered(dataGridView1);
             LoadLastConfig();
             LoadWindowSize();

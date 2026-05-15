@@ -13,7 +13,12 @@
 		<SignAssembly>False</SignAssembly>
 		<ErrorReport>none</ErrorReport>
 		<IncludeSymbols>False</IncludeSymbols>
-		<Version>2.2.0</Version>
+		<Version>2.2.1</Version>
+		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+		<Product>Xpass</Product>
+		<Company>ssmmtt</Company>
+		<Copyright>Copyright © 2026 ssmmtt</Copyright>
+		<Description>Decrypt Xshell session file password.</Description>
 	</PropertyGroup>
 
 </Project>
