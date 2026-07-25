@@ -520,48 +520,30 @@ namespace Xpass
                 if (row.IsNewRow) continue;
 
                 bool isMatch = false;
-                
-                // 检查需要匹配的列：会话名称(0)、主机地址(1)、说明信息(5)
-                int[] searchColumns = { 0, 1, 5 };
-                
-                foreach (int colIndex in searchColumns)
+
+                // 检查所有列
+                foreach (DataGridViewCell cell in row.Cells)
                 {
-                    if (colIndex < row.Cells.Count)
+                    string cellValue = cell.Value?.ToString() ?? "";
+
+                    // 不区分大小写的匹配
+                    if (cellValue.Contains(searchText, StringComparison.OrdinalIgnoreCase))
                     {
-                        string cellValue = row.Cells[colIndex].Value?.ToString() ?? "";
-                        
-                        // 不区分大小写的匹配
-                        if (cellValue.Contains(searchText, StringComparison.OrdinalIgnoreCase))
-                        {
-                            isMatch = true;
-                            // 高亮匹配的单元格
-                            row.Cells[colIndex].Style.BackColor = Color.Yellow;
-                            row.Cells[colIndex].Style.ForeColor = Color.Black;
-                        }
-                        else
-                        {
-                            // 清除不匹配单元格的高亮
-                            row.Cells[colIndex].Style.BackColor = Color.Empty;
-                            row.Cells[colIndex].Style.ForeColor = Color.Empty;
-                        }
+                        isMatch = true;
+                        // 高亮匹配的单元格
+                        cell.Style.BackColor = Color.Yellow;
+                        cell.Style.ForeColor = Color.Black;
+                    }
+                    else
+                    {
+                        // 清除不匹配单元格的高亮
+                        cell.Style.BackColor = Color.Empty;
+                        cell.Style.ForeColor = Color.Empty;
                     }
                 }
-                
+
                 // 显示或隐藏行
                 row.Visible = isMatch;
-                
-                // 如果行不匹配，清除其他列的高亮
-                if (!isMatch)
-                {
-                    for (int i = 0; i < row.Cells.Count; i++)
-                    {
-                        if (!searchColumns.Contains(i))
-                        {
-                            row.Cells[i].Style.BackColor = Color.Empty;
-                            row.Cells[i].Style.ForeColor = Color.Empty;
-                        }
-                    }
-                }
             }
         }
     }
