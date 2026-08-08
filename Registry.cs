@@ -61,5 +61,29 @@ namespace Xpass
                 return null;
             }
         }
+
+        /// <summary>
+        /// 删除注册表中的值（用于缓存失效后清空）。
+        /// </summary>
+        public static bool DeleteFromRegistry(string key, string valueName)
+        {
+            try
+            {
+                using var registryKey = Registry.CurrentUser.OpenSubKey(key, writable: true);
+                if (registryKey == null)
+                {
+                    return true;
+                }
+
+                registryKey.DeleteValue(valueName, throwOnMissingValue: false);
+                Console.WriteLine($"[Success] Deleted registry value: {key}\\{valueName}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Exception] Error deleting registry value: {ex}");
+                return false;
+            }
+        }
     }
 }

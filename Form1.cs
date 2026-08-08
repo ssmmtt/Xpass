@@ -2,6 +2,8 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using System.Linq;
+using Microsoft.VisualBasic.FileIO;
+using Microsoft.Win32;
 
 namespace Xpass
 {
@@ -10,6 +12,11 @@ namespace Xpass
         readonly string appKey = "Software\\Xpass";
         private List<string> selectedFiles = [];
         private bool hasTriedAutoDecrypt;
+        private const int ColHost = 1;
+        private const int ColPort = 2;
+        private const int ColUserName = 3;
+        private const int ColPassword = 4;
+        private const int ColSessionPath = 6;
         public Form1()
         {
             InitializeComponent();
@@ -544,6 +551,318 @@ namespace Xpass
 
                 // 显示或隐藏行
                 row.Visible = isMatch;
+            }
+        }
+
+        private void dataGridView1_CellMouseDown(object? sender, DataGridViewCellMouseEventArgs e)
+        {
+            // ColumnIndex < 0 表示点在序号（行头）上
+            if (e.Button != MouseButtons.Right || e.RowIndex < 0)
+                return;
+
+            var selectedRowIndices = dataGridView1.SelectedCells
+                .Cast<DataGridViewCell>()
+                .Select(c => c.RowIndex)
+                .Where(i => i >= 0)
+                .Distinct()
+                .ToHashSet();
+
+            // 行头选中时 SelectedRows 也可能有值
+            foreach (DataGridViewRow selectedRow in dataGridView1.SelectedRows)
+            {
+                if (!selectedRow.IsNewRow)
+                    selectedRowIndices.Add(selectedRow.Index);
+            }
+
+            if (!selectedRowIndices.Contains(e.RowIndex))
+            {
+                selectedRowIndices = [e.RowIndex];
+            }
+
+            // 右键菜单操作按整行处理
+            dataGridView1.ClearSelection();
+            foreach (int rowIndex in selectedRowIndices.OrderBy(i => i))
+            {
+                if (rowIndex >= 0 && rowIndex < dataGridView1.Rows.Count)
+                    dataGridView1.Rows[rowIndex].Selected = true;
+            }
+
+            bool singleRow = selectedRowIndices.Count == 1;
+            openInFolderMenuItem.Visible = singleRow;
+            copyPasswordMenuItem.Visible = singleRow;
+            sessionContextMenuStrip.Show(dataGridView1, dataGridView1.PointToClient(Cursor.Position));
+        }
+
+        private void dataGridView1_CellDoubleClick(object? sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0)
+                return;
+
+            dataGridView1.ClearSelection();
+            dataGridView1.Rows[e.RowIndex].Selected = true;
+            ConnectSelectedSessions();
+        }
+
+        private List<DataGridViewRow> GetSelectedSessionRows()
+        {
+            var fromRows = dataGridView1.SelectedRows
+                .Cast<DataGridViewRow>()
+                .Where(r => !r.IsNewRow)
+                .ToList();
+
+            if (fromRows.Count > 0)
+                return fromRows.OrderBy(r => r.Index).ToList();
+
+            // 仅选中单元格时从 SelectedCells 汇总行
+            return dataGridView1.SelectedCells
+                .Cast<DataGridViewCell>()
+                .Select(c => c.OwningRow)
+                .Where(r => r is not null && !r.IsNewRow)
+                .Distinct()
+                .OrderBy(r => r!.Index)
+                .Cast<DataGridViewRow>()
+                .ToList();
+        }
+
+        private static string GetCellText(DataGridViewRow row, int columnIndex)
+        {
+            return row.Cells[columnIndex].Value?.ToString() ?? string.Empty;
+        }
+
+        private void connectSessionMenuItem_Click(object? sender, EventArgs e)
+        {
+            ConnectSelectedSessions();
+        }
+
+        private void ConnectSelectedSessions()
+        {
+            var rows = GetSelectedSessionRows();
+            if (rows.Count == 0)
+                return;
+
+            // 先判断是否有默认打开方式；没有则不要 ShellExecute，避免弹出「选择打开方式」
+            bool hasDefaultOpen = HasXshDefaultOpenAssociation();
+            string? xshellExe = null;
+            int successCount = 0;
+            var errors = new List<string>();
+
+            foreach (var row in rows)
+            {
+                string sessionPath = GetCellText(row, ColSessionPath);
+                if (string.IsNullOrWhiteSpace(sessionPath) || !File.Exists(sessionPath))
+                {
+                    errors.Add($"文件不存在：{sessionPath}");
+                    continue;
+                }
+
+                try
+                {
+                    if (hasDefaultOpen)
+                    {
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = sessionPath,
+                            UseShellExecute = true
+                        });
+                        successCount++;
+                        continue;
+                    }
+
+                    xshellExe ??= XshellLocator.ResolveExecutable();
+                    if (xshellExe is null)
+                    {
+                        errors.Add("未找到 Xshell 可执行文件");
+                        break;
+                    }
+
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = xshellExe,
+                        Arguments = $"\"{sessionPath}\"",
+                        UseShellExecute = true,
+                        WorkingDirectory = Path.GetDirectoryName(xshellExe) ?? string.Empty
+                    });
+                    successCount++;
+                }
+                catch (Exception ex)
+                {
+                    errors.Add($"{Path.GetFileName(sessionPath)}：{ex.Message}");
+                }
+            }
+
+            if (successCount == 0)
+            {
+                string message = errors.Count > 0
+                    ? string.Join("\n", errors.Distinct())
+                    : "无法打开会话。";
+                if (!hasDefaultOpen && xshellExe is null)
+                {
+                    message = "未找到默认打开方式，也未在本机找到 Xshell。\n请安装 Xshell 或为 .xsh 设置默认程序后重试。";
+                }
+
+                MessageBox.Show(this, message, "连接会话", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else if (errors.Count > 0)
+            {
+                MessageBox.Show(
+                    this,
+                    $"已打开 {successCount} 个会话，部分失败：\n{string.Join("\n", errors.Distinct())}",
+                    "连接会话",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+        }
+
+        /// <summary>
+        /// 是否存在可用的 .xsh 默认打开方式（用户 UserChoice 或 HKCR 扩展名关联）。
+        /// 无默认时不得 ShellExecute，否则会弹出「选择打开方式」。
+        /// </summary>
+        private static bool HasXshDefaultOpenAssociation()
+        {
+            try
+            {
+                using (var userChoice = Registry.CurrentUser.OpenSubKey(
+                    @"Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.xsh\UserChoice"))
+                {
+                    var userProgId = userChoice?.GetValue("ProgId")?.ToString();
+                    if (!string.IsNullOrWhiteSpace(userProgId))
+                        return true;
+                }
+
+                using var extKey = Registry.ClassesRoot.OpenSubKey(".xsh");
+                var progId = extKey?.GetValue(null)?.ToString();
+                if (string.IsNullOrWhiteSpace(progId))
+                    return false;
+
+                using var commandKey = Registry.ClassesRoot.OpenSubKey($@"{progId}\shell\open\command");
+                var command = commandKey?.GetValue(null)?.ToString();
+                return !string.IsNullOrWhiteSpace(command);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private void openInFolderMenuItem_Click(object? sender, EventArgs e)
+        {
+            var rows = GetSelectedSessionRows();
+            if (rows.Count != 1)
+                return;
+
+            string sessionPath = GetCellText(rows[0], ColSessionPath);
+            if (string.IsNullOrWhiteSpace(sessionPath) || !File.Exists(sessionPath))
+            {
+                MessageBox.Show(this, "会话文件不存在。", "打开所在目录", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "explorer.exe",
+                    Arguments = $"/select,\"{sessionPath}\"",
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, "无法打开文件夹：" + ex.Message, "打开所在目录", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void copyPasswordMenuItem_Click(object? sender, EventArgs e)
+        {
+            var rows = GetSelectedSessionRows();
+            if (rows.Count != 1)
+                return;
+
+            Clipboard.SetText(GetCellText(rows[0], ColPassword));
+        }
+
+        private void copyConnectionInfoMenuItem_Click(object? sender, EventArgs e)
+        {
+            var rows = GetSelectedSessionRows();
+            if (rows.Count == 0)
+                return;
+
+            var lines = rows.Select(row =>
+                string.Join('\t',
+                    GetCellText(row, ColHost),
+                    GetCellText(row, ColPort),
+                    GetCellText(row, ColUserName),
+                    GetCellText(row, ColPassword)));
+
+            Clipboard.SetText(string.Join('\n', lines));
+        }
+
+        private void deleteSessionFileMenuItem_Click(object? sender, EventArgs e)
+        {
+            var rows = GetSelectedSessionRows();
+            if (rows.Count == 0)
+                return;
+
+            var names = rows
+                .Select(r => Path.GetFileName(GetCellText(r, ColSessionPath)))
+                .Where(n => !string.IsNullOrEmpty(n))
+                .Take(5)
+                .ToList();
+
+            string summary = string.Join("\n", names);
+            if (rows.Count > names.Count)
+                summary += $"\n…共 {rows.Count} 个文件";
+
+            var result = MessageBox.Show(
+                this,
+                $"确定将以下 {rows.Count} 个会话文件删除到回收站吗？\n\n{summary}",
+                "删除会话文件",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes)
+                return;
+
+            var failed = new List<string>();
+            var rowsToRemove = new List<DataGridViewRow>();
+
+            foreach (var row in rows)
+            {
+                string sessionPath = GetCellText(row, ColSessionPath);
+                try
+                {
+                    if (File.Exists(sessionPath))
+                    {
+                        FileSystem.DeleteFile(
+                            sessionPath,
+                            UIOption.OnlyErrorDialogs,
+                            RecycleOption.SendToRecycleBin);
+                    }
+
+                    rowsToRemove.Add(row);
+                }
+                catch (Exception ex)
+                {
+                    failed.Add($"{Path.GetFileName(sessionPath)}：{ex.Message}");
+                }
+            }
+
+            foreach (var row in rowsToRemove.OrderByDescending(r => r.Index))
+            {
+                dataGridView1.Rows.Remove(row);
+            }
+
+            SyncDataGridRowHeadersWidth();
+            ImproveDataGridView();
+
+            if (failed.Count > 0)
+            {
+                MessageBox.Show(
+                    this,
+                    $"部分文件删除失败：\n{string.Join("\n", failed)}",
+                    "删除会话文件",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
             }
         }
     }

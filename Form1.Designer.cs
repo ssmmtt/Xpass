@@ -52,7 +52,14 @@ namespace Xpass
             searchTextBox = new TextBox();
             toolTip1 = new ToolTip(components);
             githubLinkPictureBox = new PictureBox();
+            sessionContextMenuStrip = new ContextMenuStrip(components);
+            connectSessionMenuItem = new ToolStripMenuItem();
+            openInFolderMenuItem = new ToolStripMenuItem();
+            copyPasswordMenuItem = new ToolStripMenuItem();
+            copyConnectionInfoMenuItem = new ToolStripMenuItem();
+            deleteSessionFileMenuItem = new ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            sessionContextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)githubLinkPictureBox).BeginInit();
             SuspendLayout();
             // 
@@ -156,13 +163,59 @@ namespace Xpass
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView1.Columns.AddRange(new DataGridViewColumn[] { Column1, Column2, Column3, Column4, Column5, Column6, Column7 });
             dataGridView1.Location = new Point(5, 156);
+            dataGridView1.MultiSelect = true;
             dataGridView1.Name = "dataGridView1";
             dataGridView1.ReadOnly = true;
             dataGridView1.RowHeadersWidth = 30;
             dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            dataGridView1.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
+            dataGridView1.SelectionMode = DataGridViewSelectionMode.RowHeaderSelect;
             dataGridView1.Size = new Size(694, 415);
             dataGridView1.TabIndex = 7;
+            dataGridView1.CellDoubleClick += dataGridView1_CellDoubleClick;
+            dataGridView1.CellMouseDown += dataGridView1_CellMouseDown;
             dataGridView1.RowPostPaint += dataGridView1_RowPostPaint;
+            // 
+            // sessionContextMenuStrip
+            // 
+            sessionContextMenuStrip.Items.AddRange(new ToolStripItem[] { connectSessionMenuItem, copyPasswordMenuItem, copyConnectionInfoMenuItem, openInFolderMenuItem, deleteSessionFileMenuItem });
+            sessionContextMenuStrip.Name = "sessionContextMenuStrip";
+            sessionContextMenuStrip.Size = new Size(161, 114);
+            // 
+            // connectSessionMenuItem
+            // 
+            connectSessionMenuItem.Name = "connectSessionMenuItem";
+            connectSessionMenuItem.Size = new Size(160, 22);
+            connectSessionMenuItem.Text = "连接会话";
+            connectSessionMenuItem.Click += connectSessionMenuItem_Click;
+            // 
+            // openInFolderMenuItem
+            // 
+            openInFolderMenuItem.Name = "openInFolderMenuItem";
+            openInFolderMenuItem.Size = new Size(160, 22);
+            openInFolderMenuItem.Text = "打开所在目录";
+            openInFolderMenuItem.Click += openInFolderMenuItem_Click;
+            // 
+            // copyPasswordMenuItem
+            // 
+            copyPasswordMenuItem.Name = "copyPasswordMenuItem";
+            copyPasswordMenuItem.Size = new Size(160, 22);
+            copyPasswordMenuItem.Text = "复制密码";
+            copyPasswordMenuItem.Click += copyPasswordMenuItem_Click;
+            // 
+            // copyConnectionInfoMenuItem
+            // 
+            copyConnectionInfoMenuItem.Name = "copyConnectionInfoMenuItem";
+            copyConnectionInfoMenuItem.Size = new Size(160, 22);
+            copyConnectionInfoMenuItem.Text = "复制连接信息";
+            copyConnectionInfoMenuItem.Click += copyConnectionInfoMenuItem_Click;
+            // 
+            // deleteSessionFileMenuItem
+            // 
+            deleteSessionFileMenuItem.Name = "deleteSessionFileMenuItem";
+            deleteSessionFileMenuItem.Size = new Size(160, 22);
+            deleteSessionFileMenuItem.Text = "删除会话文件";
+            deleteSessionFileMenuItem.Click += deleteSessionFileMenuItem_Click;
             // 
             // Column1
             // 
@@ -262,6 +315,7 @@ namespace Xpass
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Xpass";
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            sessionContextMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)githubLinkPictureBox).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -289,5 +343,11 @@ namespace Xpass
         private TextBox searchTextBox;
         private ToolTip toolTip1;
         private PictureBox githubLinkPictureBox;
+        private ContextMenuStrip sessionContextMenuStrip;
+        private ToolStripMenuItem connectSessionMenuItem;
+        private ToolStripMenuItem openInFolderMenuItem;
+        private ToolStripMenuItem copyPasswordMenuItem;
+        private ToolStripMenuItem copyConnectionInfoMenuItem;
+        private ToolStripMenuItem deleteSessionFileMenuItem;
     }
 }
