@@ -8,4 +8,10 @@ Decrypt Xshell session file password, support xshell 7 8.
 
 ## Star History
 
-[![Star History Chart](https://star-history.dera.page/svg?repos=ssmmtt/Xpass&type=date&legend=top-left)](https://star-history.dera.page/?type=date&legend=top-left&repos=ssmmtt%2FXpass#ssmmtt/Xpass&type=date&legend=top-left)
+<a href="https://www.star-history.com/?repos=ssmmtt%2Fxpass&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=ssmmtt/xpass&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=ssmmtt/xpass&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=ssmmtt/xpass&type=date&legend=top-left" />
+ </picture>
+</a>
